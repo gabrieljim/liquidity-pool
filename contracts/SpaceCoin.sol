@@ -16,6 +16,7 @@ contract SpaceCoin is ERC20 {
     uint256 public constant TAX = 2; // 0.02, 2% of the tx;
     uint256 public totalContributed;
     bool isContractPaused = false;
+    bool public isTaxOn = true;
     address public owner;
     address payable public treasuryWallet;
 
@@ -52,17 +53,12 @@ contract SpaceCoin is ERC20 {
             "ABOVE_MAX_CONTRIBUTION"
         );
 
-        uint256 amountToTake = (TAX * msg.value) / 100;
-        uint256 userAmount = msg.value - amountToTake;
-
         /*
          * The spec says that the exchange rate must be 5 tokens to 1 ether, so give the sender 5 times the ether they sent
          */
-        balancesToClaim[msg.sender] += userAmount * 5;
-        contributionsOf[msg.sender] += userAmount;
-        totalContributed += userAmount;
-
-        treasuryWallet.transfer(amountToTake);
+        balancesToClaim[msg.sender] += msg.value * 5;
+        contributionsOf[msg.sender] += msg.value;
+        totalContributed += msg.value;
     }
 
     function getIndividualLimit() private view returns (uint256) {
@@ -104,12 +100,32 @@ contract SpaceCoin is ERC20 {
         isContractPaused = !isContractPaused;
     }
 
+    function toggleTax() external ownerOnly {
+        isTaxOn = !isTaxOn;
+    }
+
     function addToWhitelist(address account) external ownerOnly {
         isWhitelisted[account] = true;
     }
 
     function canUserContribute(address account) public view returns (bool) {
         return isWhitelisted[account] || currentPhase != Phase.SEED;
+    }
+
+    function transfer(address recipient, uint256 amount)
+        public
+        override
+        returns (bool)
+    {
+        uint256 amountToTake;
+        if (isTaxOn) {
+            amountToTake = (TAX * amount) / 100;
+        }
+        uint256 amountToTransfer = amount - amountToTake;
+
+        _transfer(msg.sender, recipient, amountToTransfer);
+        _transfer(msg.sender, treasuryWallet, amountToTake);
+        return true;
     }
 
     function mint(address account, uint256 amount) external ownerOnly {

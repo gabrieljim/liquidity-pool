@@ -52,6 +52,12 @@ describe("Space Coin Contract", function () {
       ).to.be.revertedWith("OWNER_ONLY");
     });
 
+    it("Only owner can toggle tax", async () => {
+      await expect(spaceCoin.connect(addr1).toggleTax()).to.be.revertedWith(
+        "OWNER_ONLY"
+      );
+    });
+
     it("Only owner can mint", async () => {
       await expect(
         spaceCoin.connect(addr1).mint(addr1.address, 1000)
@@ -73,16 +79,10 @@ describe("Space Coin Contract", function () {
 
   describe("Contributing", () => {
     it("Assigns 5 times the value contributed", async () => {
-      await spaceCoin.contribute({ value: parseEther("0.25") }); // Minus 2% = 0.245
+      await spaceCoin.contribute({ value: parseEther("0.25") });
 
       const assignedBalance = await spaceCoin.balancesToClaim(owner.address);
-      expect(assignedBalance).to.be.equal(parseEther("1.225")); // 0.245 * 5 = 1.225 tokens
-    });
-
-    it("Sends 2% of the transaction to the treasury wallet", async () => {
-      await expect(
-        await spaceCoin.contribute({ value: parseEther("1") })
-      ).to.changeEtherBalance(treasury, parseEther("0.02"));
+      expect(assignedBalance).to.be.equal(parseEther("1.25"));
     });
   });
 
@@ -113,6 +113,35 @@ describe("Space Coin Contract", function () {
 
       expect(newSupply).to.be.equal(parseEther("500000"));
       expect(newOwnerBalance).to.be.equal(parseEther("100"));
+    });
+  });
+
+  describe("Taxing", () => {
+    it("Pauses taxing", async () => {
+      let balanceOfTreasury, balanceOfUser;
+
+      await spaceCoin.contribute({ value: parseEther("1") });
+      await spaceCoin.advancePhase();
+      await spaceCoin.advancePhase();
+      await spaceCoin.claimTokens();
+
+      // TAX OFF
+      await spaceCoin.toggleTax();
+      await spaceCoin.transfer(addr1.address, parseEther("1"));
+      balanceOfTreasury = await spaceCoin.balanceOf(treasury.address);
+      balanceOfUser = await spaceCoin.balanceOf(addr1.address);
+
+      expect(balanceOfTreasury).to.be.equal(parseEther("0"));
+      expect(balanceOfUser).to.be.equal(parseEther("1"));
+
+      // TAX ON
+      await spaceCoin.toggleTax();
+      await spaceCoin.transfer(addr2.address, parseEther("1"));
+      balanceOfTreasury = await spaceCoin.balanceOf(treasury.address);
+      balanceOfUser = await spaceCoin.balanceOf(addr2.address);
+
+      expect(balanceOfTreasury).to.be.equal(parseEther("0.02"));
+      expect(balanceOfUser).to.be.equal(parseEther("0.98"));
     });
   });
 
@@ -197,10 +226,10 @@ describe("Space Coin Contract", function () {
             .contribute({ value: parseEther("1500") });
         }
 
-        //Current total contributions: 14,700
+        //Current total contributions: 15,000
         await spaceCoin.addToWhitelist(addrs[10].address);
         await expect(
-          spaceCoin.connect(addrs[10]).contribute({ value: parseEther("301") })
+          spaceCoin.connect(addrs[10]).contribute({ value: parseEther("1") })
         ).to.be.revertedWith("ABOVE_MAX_CONTRIBUTION");
       });
     });
@@ -211,9 +240,9 @@ describe("Space Coin Contract", function () {
       });
 
       it("Reverts if individual total above 1000 ether", async () => {
-        await spaceCoin.contribute({ value: parseEther("1000") }); // Contributed: 980
+        await spaceCoin.contribute({ value: parseEther("1000") });
         await expect(
-          spaceCoin.contribute({ value: parseEther("21") })
+          spaceCoin.contribute({ value: parseEther("1") })
         ).to.be.revertedWith("ABOVE_MAX_INDIVIDUAL_CONTRIBUTION");
       });
 
@@ -225,9 +254,9 @@ describe("Space Coin Contract", function () {
             .contribute({ value: parseEther("1000") });
         }
 
-        //Current total contributions: 29,400
+        //Current total contributions: 30,000
         await expect(
-          spaceCoin.connect(addrs[30]).contribute({ value: parseEther("700") })
+          spaceCoin.connect(addrs[30]).contribute({ value: parseEther("1") })
         ).to.be.revertedWith("ABOVE_MAX_CONTRIBUTION");
       });
     });
@@ -268,9 +297,35 @@ describe("Space Coin Contract", function () {
 
       const balanceOf = await spaceCoin.balanceOf(addr1.address);
 
-      // Contributed 0.5 - 2% = 0.49
-      // 0.49 * 5 = 2.45 tokens
-      expect(balanceOf).to.be.equal(parseEther("2.45"));
+      expect(balanceOf).to.be.equal(parseEther("2.5"));
+    });
+  });
+
+  describe("Token transfering", () => {
+    it("Transfers tokens and takes 2%", async () => {
+      await spaceCoin.contribute({ value: parseEther("1") });
+      await spaceCoin.advancePhase();
+      await spaceCoin.advancePhase();
+
+      await spaceCoin.claimTokens();
+
+      await spaceCoin.transfer(addr1.address, parseEther("1"));
+
+      const balanceOf = await spaceCoin.balanceOf(addr1.address);
+
+      expect(balanceOf).to.be.equal(parseEther("0.98"));
+    });
+
+    it("Sends 2% of a transaction to the treasury wallet", async () => {
+      await spaceCoin.contribute({ value: parseEther("1") });
+      await spaceCoin.advancePhase();
+      await spaceCoin.advancePhase();
+      await spaceCoin.claimTokens();
+      await spaceCoin.transfer(addr1.address, parseEther("1"));
+
+      const balanceOf = await spaceCoin.balanceOf(treasury.address);
+
+      expect(balanceOf).to.be.equal(parseEther("0.02"));
     });
   });
 });
