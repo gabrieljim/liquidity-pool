@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import useContract from "../../utils/hooks/useContract";
-import useMetamaskAccount from "../../utils/hooks/useMetamaskAccount";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
+import "./styles.css";
 
 import { callContractMethod } from "../../utils";
 
-const TokensPurchased = () => {
-  const [tokens, setTokens] = useState();
-  const contract = useContract(true);
-  const account = useMetamaskAccount();
+const TokensPurchased = ({ contract, account }) => {
+  const [tokens, setTokens] = useState(null);
 
   const getTokensAssigned = useCallback(async () => {
     const { result, error } = await callContractMethod(() =>
@@ -29,12 +26,17 @@ const TokensPurchased = () => {
   }, [contract, account, getTokensAssigned]);
 
   return tokens ? (
-    <>
-      <div>{tokens}</div>
-      <ToastContainer />
-    </>
+    <div className="wallet-info">
+      <div>
+        <strong>Your wallet:</strong> {account}
+      </div>
+      <div>
+        When the token gets to its final phase, you'll get: {tokens}{" "}
+        <strong>SC</strong>
+      </div>
+    </div>
   ) : (
-    "Loading"
+    "Loading... (Make sure you are on the correct network!)"
   );
 };
 

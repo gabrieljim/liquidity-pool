@@ -1,5 +1,5 @@
 import "./App.css";
-import TokensPurchased from "./components/TokensPurchased/TokensPurchased";
+import SpaceCoinInfo from "./components/SpaceCoinInfo/SpaceCoinInfo";
 import "react-toastify/dist/ReactToastify.css";
 
 import useContract from "./utils/hooks/useContract";
@@ -11,9 +11,7 @@ const App = () => {
     <div className="App">
       <h1>Space Coin</h1>
       {contract ? (
-        <>
-          <TokensPurchased />
-        </>
+        <SpaceCoinInfo />
       ) : (
         "Please connect your wallet to use the dapp!"
       )}
