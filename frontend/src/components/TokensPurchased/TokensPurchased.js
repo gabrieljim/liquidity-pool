@@ -3,8 +3,9 @@ import { toast } from "react-toastify";
 import "./styles.css";
 
 import { callContractMethod } from "../../utils";
+import { BigNumber } from "ethers";
 
-const TokensPurchased = ({ contract, account }) => {
+const TokensPurchased = ({ contract, account, setIsLoading }) => {
   const [tokens, setTokens] = useState(null);
 
   const getTokensAssigned = useCallback(async () => {
@@ -13,11 +14,14 @@ const TokensPurchased = ({ contract, account }) => {
     );
 
     if (error) {
+      setIsLoading(false);
       return toast.error(error);
     }
 
-    setTokens(result.toString());
-  }, [account, contract]);
+    const decimals = BigNumber.from("10000000000000000"); //16 zeroes, the contract has 18 decimals so this would show 2
+    const tokens = result.div(decimals).toString();
+    setTokens(tokens / 100); //Divided by 100 so to move the comma two spaces left
+  }, [account, contract, setIsLoading]);
 
   useEffect(() => {
     if (contract && account) {
@@ -25,7 +29,14 @@ const TokensPurchased = ({ contract, account }) => {
     }
   }, [contract, account, getTokensAssigned]);
 
-  return tokens ? (
+  useEffect(() => {
+    if (contract && account) {
+      const filter = contract.filters.TokensBought(account);
+      contract.on(filter, () => getTokensAssigned());
+    }
+  }, [contract, account, getTokensAssigned]);
+
+  return tokens >= 0 ? (
     <div className="wallet-info">
       <div>
         <strong>Your wallet:</strong> {account}

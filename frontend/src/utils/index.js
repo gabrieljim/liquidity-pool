@@ -1,7 +1,7 @@
 import SpaceCoin from "../artifacts/contracts/SpaceCoin.sol/SpaceCoin.json";
 import { ethers } from "ethers";
 
-const spaceCoinAdress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+export const spaceCoinAdress = "0xF785177DFb4aB890582676d9a3Bcb34927D18819";
 
 export const requestAccount = async () => {
   const [account] = await window.ethereum.request({
@@ -12,6 +12,7 @@ export const requestAccount = async () => {
 };
 
 export const handleContractCallError = (error) => {
+  console.log(error);
   let errorReason = error?.data?.message;
 
   return errorReason || "An error occured calling this method!";

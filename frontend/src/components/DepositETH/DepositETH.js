@@ -23,7 +23,12 @@ const DepositETH = ({ contract }) => {
       return toast.error(error);
     }
 
-    console.log(result);
+    setAmount("");
+    toast.success(
+      "Transaction sent! Waiting for confirmation from the network..."
+    );
+    await result.wait();
+    toast.success("Transaction confirmed!");
   };
 
   return (
