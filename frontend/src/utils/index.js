@@ -11,11 +11,31 @@ export const requestAccount = async () => {
   return account;
 };
 
-export const handleContractCallError = (error) => {
-  console.log(error);
-  let errorReason = error?.data?.message;
+const mapErrorToFriendlyMessage = (error) => {
+  switch (error) {
+    case "NOT_ALLOWED":
+      return "You don't have permission to contribute!";
+    case "User denied transaction":
+      return "Transaction denied by user!";
+    default:
+      return "An error occured calling this method!";
+  }
+};
 
-  return errorReason || "An error occured calling this method!";
+const getErrorFromReversion = (revertReason) => {
+  const revertErrors = ["NOT_ALLOWED", "User denied transaction"];
+
+  const error = revertErrors.find((errorConstant) =>
+    revertReason.includes(errorConstant)
+  );
+
+  return mapErrorToFriendlyMessage(error);
+};
+
+export const handleContractCallError = (error) => {
+  let errorReason = getErrorFromReversion(error?.message);
+
+  return errorReason;
 };
 
 export const callContractMethod = async (method) => {
@@ -23,7 +43,7 @@ export const callContractMethod = async (method) => {
   try {
     result = await method();
   } catch (e) {
-    error = handleContractCallError(e);
+    error = handleContractCallError(e.error || e);
   }
 
   return {
