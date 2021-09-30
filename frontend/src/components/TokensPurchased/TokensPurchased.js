@@ -1,32 +1,40 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import useContract from "../../utils/hooks/useContract";
+import useMetamaskAccount from "../../utils/hooks/useMetamaskAccount";
 import { ToastContainer, toast } from "react-toastify";
 
 import { callContractMethod } from "../../utils";
 
 const TokensPurchased = () => {
+  const [tokens, setTokens] = useState();
   const contract = useContract(true);
+  const account = useMetamaskAccount();
 
-  useEffect(() => {
-    if (contract) {
-      getTokensAssigned();
-    }
-  }, [contract]);
-
-  const getTokensAssigned = async () => {
+  const getTokensAssigned = useCallback(async () => {
     const { result, error } = await callContractMethod(() =>
-      contract.balancesToClaim()
+      contract.balancesToClaim(account)
     );
+
     if (error) {
       return toast.error(error);
     }
-  };
 
-  return (
+    setTokens(result.toString());
+  }, [account, contract]);
+
+  useEffect(() => {
+    if (contract && account) {
+      getTokensAssigned();
+    }
+  }, [contract, account, getTokensAssigned]);
+
+  return tokens ? (
     <>
-      <div>Tokens</div>
+      <div>{tokens}</div>
       <ToastContainer />
     </>
+  ) : (
+    "Loading"
   );
 };
 

@@ -4,7 +4,11 @@ import { ethers } from "ethers";
 const spaceCoinAdress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
 export const requestAccount = async () => {
-  await window.ethereum.request({ method: "eth_requestAccounts" });
+  const [account] = await window.ethereum.request({
+    method: "eth_requestAccounts",
+  });
+
+  return account;
 };
 
 export const handleContractCallError = (error) => {
