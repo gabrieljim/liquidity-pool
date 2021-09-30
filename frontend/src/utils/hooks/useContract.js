@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getContractInstance } from "..";
 
 const useContract = (withSigner = false) => {
-  const [contract, setContract] = useState(null);
+  const [contract, setContract] = useState(undefined);
 
   useEffect(() => {
     (async () => {
