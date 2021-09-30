@@ -4,7 +4,7 @@ import "./styles.css";
 
 import { bigNumberToDecimal, callContractMethod } from "../../utils";
 
-const TokensPurchased = ({ contract, account, setIsLoading }) => {
+const TokensPurchased = ({ contract, account }) => {
   const [tokens, setTokens] = useState(null);
 
   const getTokensAssigned = useCallback(async () => {
@@ -13,7 +13,6 @@ const TokensPurchased = ({ contract, account, setIsLoading }) => {
     );
 
     if (error) {
-      setIsLoading(false);
       return toast.error(error);
     }
 

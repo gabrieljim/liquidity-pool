@@ -9,7 +9,6 @@ import PhaseInfo from "../PhaseInfo/PhaseInfo";
 import OwnerActions from "../OwnerActions/OwnerActions";
 
 const SpaceCoinInfo = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const [owner, setOwner] = useState(null);
   const contract = useContract(true);
   const account = useMetamaskAccount();
@@ -37,7 +36,6 @@ const SpaceCoinInfo = () => {
           <TokensPurchased
             contract={contract}
             account={account}
-            setIsLoading={setIsLoading}
           />
           <PhaseInfo contract={contract} account={account} />
           {account === owner && <OwnerActions contract={contract} />}
@@ -45,7 +43,7 @@ const SpaceCoinInfo = () => {
           <ToastContainer />
         </>
       ) : (
-        "Updating..."
+        "Updating... (you might need to refresh your browser)"
       )}
     </div>
   );
