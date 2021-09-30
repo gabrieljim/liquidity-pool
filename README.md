@@ -15,7 +15,11 @@ Implemented some custom hooks too, `useContract` and `useMetamaskAccount`
 
 ## Running it
 
-You can start the frontend by running
+You can start the frontend by:
+
+- Setting `PRIVATE_KEY` to your account's private key (so hardhat.config.js knows from which account to deploy)
+
+Then running:
 
 ```
 npm install
