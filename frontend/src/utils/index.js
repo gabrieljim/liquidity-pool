@@ -2,7 +2,7 @@ import SpaceCoin from "../artifacts/contracts/SpaceCoin.sol/SpaceCoin.json";
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
 
-export const spaceCoinAdress = "0xF785177DFb4aB890582676d9a3Bcb34927D18819";
+export const spaceCoinAdress = "0x7619db7F3cbCAe2414831638CC2A4E2a87907BF3";
 
 export const requestAccount = async () => {
   const [account] = await window.ethereum.request({
