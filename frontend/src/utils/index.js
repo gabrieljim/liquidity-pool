@@ -2,7 +2,7 @@ import SpaceCoin from "../artifacts/contracts/SpaceCoin.sol/SpaceCoin.json";
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
 
-export const spaceCoinAdress = "0x7619db7F3cbCAe2414831638CC2A4E2a87907BF3";
+export const spaceCoinAdress = "0xfb5C614E957162dDa1cb218002896CCC6CBCa249";
 
 export const requestAccount = async () => {
   const [account] = await window.ethereum.request({
@@ -14,6 +14,10 @@ export const requestAccount = async () => {
 
 const mapErrorToFriendlyMessage = (error) => {
   switch (error) {
+    case "OWNER_ONLY":
+      return "This is meant for the owner! What are you doing here?";
+    case "CONTRACT_PAUSED":
+      return "Contract is paused!";
     case "NOT_ALLOWED":
       return "You don't have permission to contribute!";
     case "User denied transaction":
@@ -28,8 +32,10 @@ const mapErrorToFriendlyMessage = (error) => {
 };
 
 const getErrorFromReversion = (revertReason) => {
+  console.log(revertReason);
   const revertErrors = [
     "NOT_ALLOWED",
+    "CONTRACT_PAUSED",
     "User denied transaction",
     "errorSignature=null",
     "insufficient funds",
@@ -81,7 +87,7 @@ export const getContractInstance = async (withSigner = false) => {
     contract = new ethers.Contract(
       spaceCoinAdress,
       SpaceCoin.abi,
-      signer ? signer : provider
+      signer || provider
     );
 
     return contract;

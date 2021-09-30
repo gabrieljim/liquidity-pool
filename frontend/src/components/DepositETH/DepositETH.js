@@ -53,7 +53,7 @@ const DepositETH = ({ contract }) => {
           <div className="estimated-sc">
             Will get you: {amount * 5} <strong>SC</strong>
           </div>
-          <button className="contribute-button" onClick={contribute}>
+          <button className="cool-button" onClick={contribute}>
             Contribute
           </button>
         </>

@@ -18,10 +18,11 @@ cd ..
 npm run frontend
 ```
 
-By default the frontend is connected to the deployed version on Rinkeby: 0x7619db7F3cbCAe2414831638CC2A4E2a87907BF3
+By default the frontend is connected to the deployed version on Rinkeby: 0xfb5C614E957162dDa1cb218002896CCC6CBCa249
 
 If you'd like to change that, you can do so at `frontend/src/utils/index.js`
 
 #### Project extensions
 
 - [x] In the frontend, show total contributed for each phase, total contributed overall, remaining available to contribute.
+- [x] Extend the frontend to detect and show a different UI for the ICO contract owner so they can manage their contract

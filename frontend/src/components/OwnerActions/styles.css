@@ -1,0 +1,8 @@
+.owner-container {
+  border-top: 1px solid var(--text-color);
+  margin-top: 20px;
+}
+
+.toggle-tax {
+  margin-left: 20px;
+}

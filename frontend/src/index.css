@@ -16,3 +16,22 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.cool-button {
+  background-color: var(--background);
+  border: 1px solid var(--text-color);
+  border-radius: 20px;
+  color: var(--text-color);
+  font-weight: bold;
+  font-size: 1.4rem;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.cool-button:hover {
+  cursor: pointer;
+  background-color: var(--accent-color);
+  border: var(--background);
+  color: var(--background);
+  transition: all 0.2s;
+}

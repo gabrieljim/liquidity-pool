@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract SpaceCoin is ERC20 {
     event TokensBought(address indexed _account, uint256 amount);
+    event OwnerAction();
 
     enum Phase {
         SEED,
@@ -16,7 +17,7 @@ contract SpaceCoin is ERC20 {
     uint256 public MAX_SUPPLY;
     uint256 public constant TAX = 2; // 0.02, 2% of the tx;
     uint256 public totalContributed;
-    bool isContractPaused = false;
+    bool public isContractPaused = false;
     bool public isTaxOn = true;
     address public owner;
     address payable public treasuryWallet;
@@ -98,14 +99,17 @@ contract SpaceCoin is ERC20 {
     function advancePhase() external ownerOnly {
         require(currentPhase != Phase.OPEN, "LAST_PHASE");
         currentPhase = Phase(uint256(currentPhase) + 1);
+        emit OwnerAction();
     }
 
     function togglePauseContract() external ownerOnly {
         isContractPaused = !isContractPaused;
+        emit OwnerAction();
     }
 
     function toggleTax() external ownerOnly {
         isTaxOn = !isTaxOn;
+        emit OwnerAction();
     }
 
     function addToWhitelist(address account) external ownerOnly {

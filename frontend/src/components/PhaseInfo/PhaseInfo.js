@@ -12,6 +12,8 @@ const PHASE = {
 const PhaseInfo = ({ contract, account }) => {
   const [phase, setPhase] = useState();
   const [totalContributed, setTotalContributed] = useState();
+  const [isTaxOn, setIsTaxOn] = useState();
+  const [isPaused, setIsPaused] = useState();
 
   const getPhase = useCallback(async () => {
     const { result, error } = await callContractMethod(() =>
@@ -38,18 +40,44 @@ const PhaseInfo = ({ contract, account }) => {
     setTotalContributed(totalContributedDecimal);
   }, [contract]);
 
+  const getTaxOnOrOff = useCallback(async () => {
+    const { result, error } = await callContractMethod(() =>
+      contract.isTaxOn()
+    );
+
+    if (error) {
+      return toast.error(error);
+    }
+
+    setIsTaxOn(result);
+  }, [contract]);
+
+  const getPausedOrNot = useCallback(async () => {
+    const { result, error } = await callContractMethod(() =>
+      contract.isContractPaused()
+    );
+
+    if (error) {
+      return toast.error(error);
+    }
+
+    setIsPaused(result);
+  }, [contract]);
+
   const getPhaseInfo = useCallback(() => {
     getPhase();
     getTotalContributed();
-  }, [getPhase, getTotalContributed]);
+    getTaxOnOrOff();
+    getPausedOrNot();
+  }, [getPhase, getTotalContributed, getTaxOnOrOff, getPausedOrNot]);
 
   useEffect(() => {
     getPhaseInfo();
   }, [getPhaseInfo]);
 
   useEffect(() => {
-    const filter = contract.filters.TokensBought;
-    contract.on(filter, getPhaseInfo);
+    contract.on("TokensBought", getPhaseInfo);
+    contract.on("OwnerAction", getPhaseInfo);
   }, [contract, getPhaseInfo]);
 
   return phase && totalContributed >= 0 ? (
@@ -65,6 +93,14 @@ const PhaseInfo = ({ contract, account }) => {
       <div className="info-row">
         <span className="key">Remaining contributions before phase limit:</span>
         <span className="value">{phase.limit - totalContributed} ETH</span>
+      </div>
+      <div className="info-row">
+        <span className="key">Tax:</span>
+        <span className="value">{isTaxOn ? "ON" : "OFF"}</span>
+      </div>
+      <div className="info-row">
+        <span className="key">Paused:</span>
+        <span className="value">{isPaused ? "YES" : "NO"}</span>
       </div>
     </div>
   ) : (
