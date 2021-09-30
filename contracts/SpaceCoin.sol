@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "hardhat/console.sol";
 
 contract SpaceCoin is ERC20 {
+    event TokensBought(address indexed _account, uint256 amount);
+
     enum Phase {
         SEED,
         GENERAL,
@@ -56,9 +58,12 @@ contract SpaceCoin is ERC20 {
         /*
          * The spec says that the exchange rate must be 5 tokens to 1 ether, so give the sender 5 times the ether they sent
          */
-        balancesToClaim[msg.sender] += msg.value * 5;
+        uint256 tokenAmount = msg.value * 5;
+        balancesToClaim[msg.sender] += tokenAmount;
         contributionsOf[msg.sender] += msg.value;
         totalContributed += msg.value;
+
+        emit TokensBought(msg.sender, tokenAmount);
     }
 
     function getIndividualLimit() private view returns (uint256) {
