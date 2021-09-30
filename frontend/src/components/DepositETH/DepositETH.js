@@ -15,6 +15,10 @@ const DepositETH = ({ contract }) => {
   };
 
   const contribute = async () => {
+    if (amount <= 0) {
+      return toast.error("You can't donate zero!");
+    }
+
     const { result, error } = await callContractMethod(() =>
       contract.contribute({ value: parseEther(amount) })
     );
