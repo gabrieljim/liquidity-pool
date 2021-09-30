@@ -52,7 +52,7 @@ const PhaseInfo = ({ contract, account }) => {
     contract.on(filter, getPhaseInfo);
   }, [contract, getPhaseInfo]);
 
-  return phase && totalContributed ? (
+  return phase && totalContributed >= 0 ? (
     <div className="phase-info-container">
       <div className="info-row">
         <span className="key">Current project phase:</span>
