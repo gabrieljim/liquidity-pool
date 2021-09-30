@@ -19,6 +19,7 @@ npm run frontend
 ```
 
 By default the frontend is connected to the deployed version on Rinkeby: 0xF785177DFb4aB890582676d9a3Bcb34927D18819
+
 If you'd like to change that, you can do so at `frontend/src/utils/index.js`
 
 #### Project extensions
