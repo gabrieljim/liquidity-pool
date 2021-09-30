@@ -26,10 +26,8 @@ const TokensPurchased = ({ contract, account, setIsLoading }) => {
   }, [contract, account, getTokensAssigned]);
 
   useEffect(() => {
-    if (contract && account) {
-      const filter = contract.filters.TokensBought(account);
-      contract.on(filter, () => getTokensAssigned());
-    }
+    const filter = contract.filters.TokensBought(account);
+    contract.on(filter, () => getTokensAssigned());
   }, [contract, account, getTokensAssigned]);
 
   return tokens >= 0 ? (

@@ -23,7 +23,7 @@ const PhaseInfo = ({ contract, account }) => {
     }
 
     setPhase(PHASE[result]);
-  }, [account, contract]);
+  }, [contract]);
 
   const getTotalContributed = useCallback(async () => {
     const { result, error } = await callContractMethod(() =>
@@ -38,10 +38,19 @@ const PhaseInfo = ({ contract, account }) => {
     setTotalContributed(totalContributedDecimal);
   }, [contract]);
 
-  useEffect(() => {
+  const getPhaseInfo = useCallback(() => {
     getPhase();
     getTotalContributed();
-  }, [getPhase]);
+  }, [getPhase, getTotalContributed]);
+
+  useEffect(() => {
+    getPhaseInfo();
+  }, [getPhaseInfo]);
+
+  useEffect(() => {
+    const filter = contract.filters.TokensBought;
+    contract.on(filter, getPhaseInfo);
+  }, [contract, getPhaseInfo]);
 
   return phase && totalContributed ? (
     <div className="phase-info-container">
