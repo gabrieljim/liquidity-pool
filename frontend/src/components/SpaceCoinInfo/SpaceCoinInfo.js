@@ -4,6 +4,7 @@ import useContract from "../../utils/hooks/useContract";
 import useMetamaskAccount from "../../utils/hooks/useMetamaskAccount";
 import TokensPurchased from "../TokensPurchased/TokensPurchased";
 import DepositETH from "../DepositETH/DepositETH";
+import PhaseInfo from "../PhaseInfo/PhaseInfo";
 
 const SpaceCoinInfo = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -12,13 +13,14 @@ const SpaceCoinInfo = () => {
 
   return (
     <div>
-      {!isLoading ? (
+      {account && contract && !isLoading ? (
         <>
           <TokensPurchased
             contract={contract}
             account={account}
             setIsLoading={setIsLoading}
           />
+          <PhaseInfo contract={contract} account={account} />
           <DepositETH contract={contract} account={account} />
           <ToastContainer />
         </>

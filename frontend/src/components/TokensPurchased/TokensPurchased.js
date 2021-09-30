@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 import "./styles.css";
 
-import { callContractMethod } from "../../utils";
-import { BigNumber } from "ethers";
+import { bigNumberToDecimal, callContractMethod } from "../../utils";
 
 const TokensPurchased = ({ contract, account, setIsLoading }) => {
   const [tokens, setTokens] = useState(null);
@@ -18,15 +17,12 @@ const TokensPurchased = ({ contract, account, setIsLoading }) => {
       return toast.error(error);
     }
 
-    const decimals = BigNumber.from("10000000000000000"); //16 zeroes, the contract has 18 decimals so this would show 2
-    const tokens = result.div(decimals).toString();
-    setTokens(tokens / 100); //Divided by 100 so to move the comma two spaces left
+    const tokens = bigNumberToDecimal(result);
+    setTokens(tokens); //Divided by 100 so to move the comma two spaces left
   }, [account, contract, setIsLoading]);
 
   useEffect(() => {
-    if (contract && account) {
-      getTokensAssigned();
-    }
+    getTokensAssigned();
   }, [contract, account, getTokensAssigned]);
 
   useEffect(() => {

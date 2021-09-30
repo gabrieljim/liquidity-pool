@@ -1,4 +1,5 @@
 import SpaceCoin from "../artifacts/contracts/SpaceCoin.sol/SpaceCoin.json";
+import { BigNumber } from "ethers";
 import { ethers } from "ethers";
 
 export const spaceCoinAdress = "0xF785177DFb4aB890582676d9a3Bcb34927D18819";
@@ -18,7 +19,7 @@ const mapErrorToFriendlyMessage = (error) => {
     case "User denied transaction":
       return "Transaction denied by user!";
     case "errorSignature=null":
-      return "Error getting contract! Are you in the rinkeby network?";
+      return "Error getting contract! Are you on the rinkeby network?";
     default:
       return "An error occured calling this method!";
   }
@@ -42,6 +43,12 @@ export const handleContractCallError = (error) => {
   let errorReason = getErrorFromReversion(error?.message);
 
   return errorReason;
+};
+
+export const bigNumberToDecimal = (number) => {
+  const decimals = BigNumber.from("10000000000000000"); //16 zeroes, the contract has 18 decimals so this would show 2
+  const tokens = number.div(decimals).toString();
+  return tokens / 100;
 };
 
 export const callContractMethod = async (method) => {

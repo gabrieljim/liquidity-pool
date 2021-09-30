@@ -1,0 +1,20 @@
+.phase-info-container {
+  width: 70%;
+  margin: auto;
+}
+
+.info-row {
+  display: grid;
+  margin: 10px auto;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.key {
+  text-align: right;
+  font-weight: bold;
+}
+
+.value {
+  text-align: left;
+  margin-left: 20px;
+}
