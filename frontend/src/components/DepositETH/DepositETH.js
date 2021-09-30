@@ -32,9 +32,18 @@ const DepositETH = ({ contract }) => {
   };
 
   return (
-    <div>
+    <div className="deposit-eth-container">
       <h3>Buy SpaceCoin!</h3>
-      <input type="text" value={amount} onChange={handleAmountChange} /> ETH
+      <div className="contribute-container">
+        <input
+          className="contribute-amount"
+          placeholder="Amount to contribute..."
+          type="text"
+          value={amount}
+          onChange={handleAmountChange}
+        />{" "}
+        <span className="eth">ETH</span>
+      </div>
       {amount && (
         <>
           <div className="estimated-sc">
