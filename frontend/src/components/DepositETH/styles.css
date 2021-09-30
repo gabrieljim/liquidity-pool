@@ -19,6 +19,7 @@
   border-bottom: 1px solid var(--text-color);
   padding-bottom: 10px;
   margin-right: 10px;
+  text-align: center;
 }
 
 ::placeholder {
@@ -32,4 +33,23 @@
 
 .estimated-sc {
   margin: 1rem 0;
+}
+
+.contribute-button {
+  background-color: var(--background);
+  border: 1px solid var(--text-color);
+  border-radius: 20px;
+  color: var(--text-color);
+  font-weight: bold;
+  font-size: 1.4rem;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.contribute-button:hover {
+  cursor: pointer;
+  background-color: var(--accent-color);
+  border: var(--background);
+  color: var(--background);
+  transition: all 0.2s;
 }

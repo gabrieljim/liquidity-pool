@@ -20,6 +20,8 @@ const mapErrorToFriendlyMessage = (error) => {
       return "Transaction denied by user!";
     case "errorSignature=null":
       return "Error getting contract! Are you on the rinkeby network?";
+    case "insufficient funds":
+      return "Insufficient funds!";
     default:
       return "An error occured calling this method!";
   }
@@ -30,6 +32,7 @@ const getErrorFromReversion = (revertReason) => {
     "NOT_ALLOWED",
     "User denied transaction",
     "errorSignature=null",
+    "insufficient funds",
   ];
 
   const error = revertErrors.find((errorConstant) =>

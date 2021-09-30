@@ -8,6 +8,7 @@ body {
   --text-color: #fcfffc;
   --placeholder-color: #fcfffca4;
   --background: #313e50;
+  --accent-color: #fca311;
   background: var(--background);
 }
 
