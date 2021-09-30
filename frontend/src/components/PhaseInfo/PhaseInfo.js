@@ -43,7 +43,7 @@ const PhaseInfo = ({ contract, account }) => {
     getTotalContributed();
   }, [getPhase]);
 
-  return (
+  return phase && totalContributed ? (
     <div className="phase-info-container">
       <div className="info-row">
         <span className="key">Current project phase:</span>
@@ -58,6 +58,8 @@ const PhaseInfo = ({ contract, account }) => {
         <span className="value">{phase.limit - totalContributed} ETH</span>
       </div>
     </div>
+  ) : (
+    "Getting extra info..."
   );
 };
 
