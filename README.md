@@ -18,6 +18,8 @@ Implemented some custom hooks too, `useContract` and `useMetamaskAccount`
 You can start the frontend by running
 
 ```
+npm install
+npx hardhat compile (generates the artifacts the frontend will use)
 cd frontend
 npm install
 npm start
