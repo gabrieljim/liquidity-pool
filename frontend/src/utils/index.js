@@ -17,13 +17,19 @@ const mapErrorToFriendlyMessage = (error) => {
       return "You don't have permission to contribute!";
     case "User denied transaction":
       return "Transaction denied by user!";
+    case "errorSignature=null":
+      return "Error getting contract! Are you in the rinkeby network?";
     default:
       return "An error occured calling this method!";
   }
 };
 
 const getErrorFromReversion = (revertReason) => {
-  const revertErrors = ["NOT_ALLOWED", "User denied transaction"];
+  const revertErrors = [
+    "NOT_ALLOWED",
+    "User denied transaction",
+    "errorSignature=null",
+  ];
 
   const error = revertErrors.find((errorConstant) =>
     revertReason.includes(errorConstant)
