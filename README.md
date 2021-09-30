@@ -18,11 +18,9 @@ Implemented some custom hooks too, `useContract` and `useMetamaskAccount`
 You can start the frontend by running
 
 ```
-npm install
 cd frontend
 npm install
-cd ..
-npm run frontend
+npm start
 ```
 
 ## Re-deploying
@@ -31,7 +29,8 @@ By default the frontend is connected to the deployed version on Rinkeby: `0xfb5C
 
 If you'd like to change that:
 
-- Add a .env file on the root of the project, and add a `PRIVATE_KEY` field there
+- Add a .env file on the root of the project, and add the fields `PRIVATE_KEY` and `TREASURY_WALLET`
 - Set `PRIVATE_KEY` to your account's private key (so hardhat.config.js knows from which account to deploy)
+- Set `TREASURY_WALLET` to the account that will receive the 2% tax
 - Run `npx hardhat run scripts/deploy.js --network rinkeby`
 - You'll get the new contract's address in your console, change it at `frontend/src/utils/index.js`
