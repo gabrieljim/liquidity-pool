@@ -18,7 +18,7 @@ const TokensPurchased = ({ contract, account }) => {
 
     const tokens = bigNumberToDecimal(result);
     setTokens(tokens); //Divided by 100 so to move the comma two spaces left
-  }, [account, contract, setIsLoading]);
+  }, [account, contract]);
 
   useEffect(() => {
     getTokensAssigned();

@@ -31,12 +31,9 @@ const SpaceCoinInfo = () => {
 
   return (
     <div>
-      {account && contract && !isLoading ? (
+      {account && contract ? (
         <>
-          <TokensPurchased
-            contract={contract}
-            account={account}
-          />
+          <TokensPurchased contract={contract} account={account} />
           <PhaseInfo contract={contract} account={account} />
           {account === owner && <OwnerActions contract={contract} />}
           <DepositETH contract={contract} account={account} />
