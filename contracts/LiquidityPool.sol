@@ -4,8 +4,10 @@ pragma solidity ^0.8.0;
 import "./LPT.sol";
 import "./SpaceCoin.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
+import "@uniswap/lib/contracts/libraries/Babylonian.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract LiquidityPool {
+contract LiquidityPool is Ownable {
     LPT lpToken;
     SpaceCoin spaceCoin;
     uint256 ethReserve;
@@ -13,12 +15,12 @@ contract LiquidityPool {
     bytes4 private constant SELECTOR =
         bytes4(keccak256(bytes("transfer(address,uint256)")));
 
-    function setLPTAddress(LPT _lpToken) external {
+    function setLPTAddress(LPT _lpToken) external onlyOwner {
         require(address(lpToken) == address(0), "WRITE_ONCE");
         lpToken = _lpToken;
     }
 
-    function setSpaceCoinAddress(SpaceCoin _spaceCoin) external {
+    function setSpaceCoinAddress(SpaceCoin _spaceCoin) external onlyOwner {
         require(address(spaceCoin) == address(0), "WRITE_ONCE");
         spaceCoin = _spaceCoin;
     }
@@ -35,7 +37,7 @@ contract LiquidityPool {
                 (spcAmount * lpToken.totalSupply()) / spcReserve
             );
         } else {
-            liquidity = ethAmount * spcAmount;
+            liquidity = Babylonian.sqrt(ethAmount * spcAmount);
         }
 
         lpToken.mint(msg.sender, liquidity);
