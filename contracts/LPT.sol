@@ -2,24 +2,18 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract LPT is ERC20 {
-    address LIQUIDITY_POOL_ADDRESS;
-
-    constructor(address _lpAdress) ERC20("Liquidity Pool Token", "LPT") {
-        LIQUIDITY_POOL_ADDRESS = _lpAdress;
+contract LPT is ERC20, Ownable {
+    constructor(address _lpAddress) ERC20("Liquidity Pool Token", "LPT") {
+        transferOwnership(_lpAddress);
     }
 
-    modifier onlyLPContract() {
-        require(msg.sender == LIQUIDITY_POOL_ADDRESS, "NOT_ALLOWED");
-        _;
-    }
-
-    function mint(address account, uint256 amount) external onlyLPContract {
+    function mint(address account, uint256 amount) external onlyOwner {
         _mint(account, amount);
     }
 
-    function burn(address account, uint256 amount) external onlyLPContract {
+    function burn(address account, uint256 amount) external onlyOwner {
         _burn(account, amount);
     }
 }
