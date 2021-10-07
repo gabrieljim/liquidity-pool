@@ -2,11 +2,12 @@ const { expect } = require("chai");
 const { parseEther } = require("ethers/lib/utils");
 const { ethers } = require("hardhat");
 
-describe("Liquidity Pool Contract", function () {
+describe.only("Liquidity Pool Contract", function () {
   let owner,
     addr1,
     addr2,
     addrs,
+    provider,
     spaceCoin,
     treasury,
     liquidityPool,
@@ -14,7 +15,9 @@ describe("Liquidity Pool Contract", function () {
     spaceRouter;
 
   beforeEach(async () => {
+    provider = ethers.provider;
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
+
     treasury = addrs[35];
 
     const SpaceCoin = await ethers.getContractFactory("SpaceCoin");
@@ -36,11 +39,9 @@ describe("Liquidity Pool Contract", function () {
     await spaceCoin.advancePhase();
     await spaceCoin.advancePhase();
 
-    //Donate from 20 different address
-    for (let i = 0; i < 20; i++) {
-      await spaceCoin
-        .connect(addrs[i])
-        .contribute({ value: parseEther("1000") });
+    //Donate from 10 different address
+    for (let i = 0; i < 10; i++) {
+      await spaceCoin.connect(addrs[i]).contribute({ value: parseEther("10") });
       await spaceCoin.connect(addrs[i]).claimTokens();
     }
 
@@ -52,8 +53,6 @@ describe("Liquidity Pool Contract", function () {
 
   describe("Depositing", () => {
     it("Sends all contributed ETH and that amount multiplied by 5 of SPC to LP", async () => {
-      const provider = ethers.provider;
-
       const liquidityPoolSPCBalance = await spaceCoin.balanceOf(
         liquidityPool.address
       );
@@ -61,21 +60,18 @@ describe("Liquidity Pool Contract", function () {
         liquidityPool.address
       );
 
-      expect(liquidityPoolSPCBalance).to.be.equal(parseEther("100000"));
-      expect(liquidityPoolETHBalance).to.be.equal(parseEther("20000"));
+      expect(liquidityPoolSPCBalance).to.be.equal(parseEther("500"));
+      expect(liquidityPoolETHBalance).to.be.equal(parseEther("100"));
     });
 
     it("Mints initial LP tokens and assigns to SpaceCoin contract", async () => {
       const lpOfSpaceCoin = await lpToken.balanceOf(spaceCoin.address);
 
       /*
-       * SpaceCoin contract sent 20k eth and 100k tokens, so it should have
-       * sqrt(20,000 * 100,000), around 44,721.35 LP tokens
+       * SpaceCoin contract sent 100 eth and 500 tokens, so it should have
+       * sqrt(100 * 500), around 223.60 LP tokens
        */
-      expect(lpOfSpaceCoin).to.be.within(
-        parseEther("44721"),
-        parseEther("44722")
-      );
+      expect(lpOfSpaceCoin).to.be.within(parseEther("223"), parseEther("224"));
     });
 
     it("Transfers ETH to LP", async () => {
@@ -97,7 +93,7 @@ describe("Liquidity Pool Contract", function () {
       ).to.changeTokenBalances(
         spaceCoin,
         [addrs[0], liquidityPool],
-        [parseEther("-1"), parseEther("1")]
+        [parseEther("-1"), parseEther("0.98")]
       );
     });
 
@@ -129,11 +125,58 @@ describe("Liquidity Pool Contract", function () {
   });
 
   describe("Withdrawing", () => {
-    // it.only("Deposits and withdraws the same amount", async () => {
-    //   await spaceRouter
-    //     .connect(addrs[0])
-    //     .addLiquidity(parseEther("1"), { value: parseEther("0.2") });
-    //   await spaceRouter.connect(addrs[0]).pullLiquidity();
-    // });
+    it("Deposits and withdraws close to the same ether amount", async () => {
+      await spaceRouter
+        .connect(addrs[0])
+        .addLiquidity(parseEther("25"), { value: parseEther("5") });
+
+      const liquidityPoolETHBalanceBefore = await provider.getBalance(
+        liquidityPool.address
+      );
+      const userBalanceBefore = await provider.getBalance(addrs[0].address);
+
+      await spaceRouter.connect(addrs[0]).pullLiquidity();
+
+      const liquidityPoolETHBalanceAfter = await provider.getBalance(
+        liquidityPool.address
+      );
+      const userBalanceAfter = await provider.getBalance(addrs[0].address);
+
+      expect(
+        liquidityPoolETHBalanceBefore.sub(liquidityPoolETHBalanceAfter)
+      ).to.be.closeTo(parseEther("5"), parseEther("3"));
+
+      expect(userBalanceAfter.sub(userBalanceBefore)).to.be.closeTo(
+        parseEther("5"),
+        parseEther("3")
+      );
+    });
+
+    it("Deposits and withdraws close to the same SPC amount", async () => {
+      await spaceRouter
+        .connect(addrs[0])
+        .addLiquidity(parseEther("25"), { value: parseEther("5") });
+
+      const liquidityPoolSPCBalanceBefore = await spaceCoin.balanceOf(
+        liquidityPool.address
+      );
+      const userBalanceBefore = await spaceCoin.balanceOf(addrs[0].address);
+
+      await spaceRouter.connect(addrs[0]).pullLiquidity();
+
+      const liquidityPoolSPCBalanceAfter = await spaceCoin.balanceOf(
+        liquidityPool.address
+      );
+      const userBalanceAfter = await spaceCoin.balanceOf(addrs[0].address);
+
+      expect(
+        liquidityPoolSPCBalanceBefore.sub(liquidityPoolSPCBalanceAfter)
+      ).to.be.closeTo(parseEther("25"), parseEther("3"));
+
+      expect(userBalanceAfter.sub(userBalanceBefore)).to.be.closeTo(
+        parseEther("25"),
+        parseEther("3")
+      );
+    });
   });
 });
