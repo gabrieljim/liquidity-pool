@@ -366,7 +366,7 @@ describe("Space Coin Contract", function () {
       await liquidityPool.setLPTAddress(lpToken.address);
     });
 
-    it.only("Sends 30,000 ETH and 150,000 SPC to LP", async () => {
+    it("Sends 30,000 ETH and 150,000 SPC to LP", async () => {
       await spaceCoin.sendLiquidityToLPContract(liquidityPool.address);
 
       const provider = ethers.provider;
