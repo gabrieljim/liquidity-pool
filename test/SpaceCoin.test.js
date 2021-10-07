@@ -272,44 +272,50 @@ describe("Space Coin Contract", function () {
         ).to.be.revertedWith("ABOVE_MAX_CONTRIBUTION");
       });
     });
-  });
 
-  describe("OPEN phase", () => {
-    it("Reverts if total contributions above 30,000 ether", async () => {
-      await spaceCoin.advancePhase();
-      await spaceCoin.advancePhase();
+    describe("OPEN phase", () => {
+      it("Reverts if total contributions above 30,000 ether", async () => {
+        await spaceCoin.advancePhase();
+        await spaceCoin.advancePhase();
 
-      //Donate maximum from 30 different address
-      for (let i = 0; i < 30; i++) {
-        await spaceCoin
-          .connect(addrs[i])
-          .contribute({ value: parseEther("1000") });
-      }
+        //Donate maximum from 30 different address
+        for (let i = 0; i < 30; i++) {
+          await spaceCoin
+            .connect(addrs[i])
+            .contribute({ value: parseEther("1000") });
+        }
 
-      //Current total contributions: 29,400
-      await expect(
-        spaceCoin.connect(addrs[30]).contribute({ value: parseEther("700") })
-      ).to.be.revertedWith("ABOVE_MAX_CONTRIBUTION");
-    });
+        //Current total contributions: 29,400
+        await expect(
+          spaceCoin.connect(addrs[30]).contribute({ value: parseEther("700") })
+        ).to.be.revertedWith("ABOVE_MAX_CONTRIBUTION");
+      });
 
-    it("Reverts if claiming not allowed yet", async () => {
-      await spaceCoin.contribute({ value: parseEther("10") });
+      it("Reverts if claiming not allowed yet", async () => {
+        await spaceCoin.contribute({ value: parseEther("10") });
 
-      await expect(spaceCoin.claimTokens()).to.be.revertedWith(
-        "NOT_LAST_PHASE"
-      );
-    });
+        await expect(spaceCoin.claimTokens()).to.be.revertedWith(
+          "NOT_LAST_PHASE"
+        );
+      });
 
-    it("Allows user to claim tokens assigned to them", async () => {
-      await spaceCoin.advancePhase();
-      await spaceCoin.connect(addr1).contribute({ value: parseEther("0.5") });
-      await spaceCoin.advancePhase();
+      it("Allows user to claim tokens assigned to them", async () => {
+        await spaceCoin.advancePhase();
+        await spaceCoin.connect(addr1).contribute({ value: parseEther("0.5") });
+        await spaceCoin.advancePhase();
 
-      await spaceCoin.connect(addr1).claimTokens();
+        await spaceCoin.connect(addr1).claimTokens();
 
-      const balanceOf = await spaceCoin.balanceOf(addr1.address);
+        const balanceOf = await spaceCoin.balanceOf(addr1.address);
 
-      expect(balanceOf).to.be.equal(parseEther("2.5"));
+        expect(balanceOf).to.be.equal(parseEther("2.5"));
+      });
+
+      it("Can only send funds on the OPEN phase", async () => {
+        await expect(
+          spaceCoin.sendLiquidityToLPContract(liquidityPool.address)
+        ).to.be.revertedWith("NOT_LAST_PHASE");
+      });
     });
   });
 
@@ -341,11 +347,5 @@ describe("Space Coin Contract", function () {
     });
   });
 
-  describe("Sending funds to liquidity pool", () => {
-    it("Can only send funds on the OPEN phase", async () => {
-      await expect(
-        spaceCoin.sendLiquidityToLPContract(liquidityPool.address)
-      ).to.be.revertedWith("NOT_LAST_PHASE");
-    });
-  });
+  describe("Sending funds to liquidity pool", () => {});
 });
