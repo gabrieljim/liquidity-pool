@@ -11,9 +11,24 @@ describe("Space Coin Contract", function () {
 
     const SpaceCoin = await ethers.getContractFactory("SpaceCoin");
     spaceCoin = await SpaceCoin.deploy(treasury.address);
+
     const LiquidityPool = await ethers.getContractFactory("LiquidityPool");
     liquidityPool = await LiquidityPool.deploy();
+
     const LPT = await ethers.getContractFactory("LPT");
     lpToken = await LPT.deploy(liquidityPool.address);
+
+    await spaceCoin.advancePhase();
+    await spaceCoin.advancePhase();
+
+    //Donate maximum from 30 different address
+    for (let i = 0; i < 30; i++) {
+      await spaceCoin
+        .connect(addrs[i])
+        .contribute({ value: parseEther("1000") });
+    }
+
+    await liquidityPool.setSpaceCoinAddress(spaceCoin.address);
+    await liquidityPool.setLPTAddress(lpToken.address);
   });
 });

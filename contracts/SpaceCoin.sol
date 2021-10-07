@@ -162,11 +162,12 @@ contract SpaceCoin is ERC20 {
          *  this function sending the appropiate amount
          */
         uint256 spaceCoinAmountToTransfer = totalContributed * 5;
-        bool success = transfer(
+
+        _transfer(
+            address(this),
             address(liquidityPool),
             spaceCoinAmountToTransfer
         );
-        require(success);
 
         liquidityPool.deposit{value: totalContributed}(
             spaceCoinAmountToTransfer

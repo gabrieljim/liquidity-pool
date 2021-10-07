@@ -28,16 +28,15 @@ contract LiquidityPool is Ownable {
     }
 
     function deposit(uint256 spcAmount) external payable {
+        _update();
         uint256 liquidity;
         uint256 totalSupply = lpToken.totalSupply();
         uint256 ethAmount = msg.value;
 
         if (totalSupply > 0) {
             liquidity = Math.min(
-                //   2 ETH *                100LP   /  10 ETH     = 20 LP
-                (ethAmount * lpToken.totalSupply()) / ethReserve,
-                //    10🚀 *                100LP   /     50🚀    = 20 LP
-                (spcAmount * lpToken.totalSupply()) / spcReserve
+                (ethAmount * totalSupply) / ethReserve,
+                (spcAmount * totalSupply) / spcReserve
             );
         } else {
             liquidity = Babylonian.sqrt(ethAmount * spcAmount);
@@ -74,6 +73,7 @@ contract LiquidityPool is Ownable {
         if (timeElapsed > 0) {
             ethReserve = address(this).balance;
             spcReserve = spaceCoin.balanceOf(address(this));
+            lastBlockTimestamp = blockTimestamp;
         }
     }
 }

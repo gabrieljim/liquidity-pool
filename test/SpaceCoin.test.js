@@ -3,7 +3,7 @@ const { parseEther } = require("ethers/lib/utils");
 const { ethers } = require("hardhat");
 
 describe("Space Coin Contract", function () {
-  let owner, addr1, addr2, addrs, spaceCoin, treasury, liquidityPool;
+  let owner, addr1, addr2, addrs, spaceCoin, treasury, liquidityPool, lpToken;
 
   beforeEach(async () => {
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
@@ -14,6 +14,9 @@ describe("Space Coin Contract", function () {
 
     const LiquidityPool = await ethers.getContractFactory("LiquidityPool");
     liquidityPool = await LiquidityPool.deploy();
+
+    const LPT = await ethers.getContractFactory("LPT");
+    lpToken = await LPT.deploy(liquidityPool.address);
   });
 
   describe("Deployment", () => {
@@ -347,5 +350,36 @@ describe("Space Coin Contract", function () {
     });
   });
 
-  describe("Sending funds to liquidity pool", () => {});
+  describe("Sending funds to liquidity pool", () => {
+    beforeEach(async () => {
+      await spaceCoin.advancePhase();
+      await spaceCoin.advancePhase();
+
+      //Donate maximum from 30 different address
+      for (let i = 0; i < 30; i++) {
+        await spaceCoin
+          .connect(addrs[i])
+          .contribute({ value: parseEther("1000") });
+      }
+
+      await liquidityPool.setSpaceCoinAddress(spaceCoin.address);
+      await liquidityPool.setLPTAddress(lpToken.address);
+    });
+
+    it.only("Sends 30,000 ETH and 150,000 SPC to LP", async () => {
+      await spaceCoin.sendLiquidityToLPContract(liquidityPool.address);
+
+      const provider = ethers.provider;
+
+      const liquidityPoolSPCBalance = await spaceCoin.balanceOf(
+        liquidityPool.address
+      );
+      const liquidityPoolETHBalance = await provider.getBalance(
+        liquidityPool.address
+      );
+
+      expect(liquidityPoolSPCBalance).to.be.equal(parseEther("150000"));
+      expect(liquidityPoolETHBalance).to.be.equal(parseEther("30000"));
+    });
+  });
 });
