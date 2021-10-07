@@ -3,7 +3,15 @@ const { parseEther } = require("ethers/lib/utils");
 const { ethers } = require("hardhat");
 
 describe.only("Liquidity Pool Contract", function () {
-  let owner, addr1, addr2, addrs, spaceCoin, treasury, liquidityPool, lpToken;
+  let owner,
+    addr1,
+    addr2,
+    addrs,
+    spaceCoin,
+    treasury,
+    liquidityPool,
+    lpToken,
+    spaceRouter;
 
   beforeEach(async () => {
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
@@ -18,6 +26,13 @@ describe.only("Liquidity Pool Contract", function () {
     const LPT = await ethers.getContractFactory("LPT");
     lpToken = await LPT.deploy(liquidityPool.address);
 
+    const SpaceRouter = await ethers.getContractFactory("SpaceRouter");
+    spaceRouter = await SpaceRouter.deploy(
+      liquidityPool.address,
+      spaceCoin.address
+    );
+    await spaceCoin.setRouterAddress(spaceRouter.address);
+
     await spaceCoin.advancePhase();
     await spaceCoin.advancePhase();
 
@@ -31,12 +46,12 @@ describe.only("Liquidity Pool Contract", function () {
 
     await liquidityPool.setSpaceCoinAddress(spaceCoin.address);
     await liquidityPool.setLPTAddress(lpToken.address);
+
+    await spaceCoin.sendLiquidityToLPContract(liquidityPool.address);
   });
 
   describe("Depositing", () => {
     it("Sends all contributed ETH and that amount multiplied by 5 of SPC to LP", async () => {
-      await spaceCoin.sendLiquidityToLPContract(liquidityPool.address);
-
       const provider = ethers.provider;
 
       const liquidityPoolSPCBalance = await spaceCoin.balanceOf(
@@ -50,10 +65,27 @@ describe.only("Liquidity Pool Contract", function () {
       expect(liquidityPoolETHBalance).to.be.equal(parseEther("20000"));
     });
 
-    it("Can add extra liquidity after the first deposit", async () => {
-      await spaceCoin.sendLiquidityToLPContract(liquidityPool.address);
+    it("Transfers ETH to LP", async () => {
+      await expect(() =>
+        spaceRouter
+          .connect(addrs[0])
+          .addLiquidity(parseEther("1"), { value: parseEther("0.2") })
+      ).to.changeEtherBalances(
+        [addrs[0], liquidityPool],
+        [parseEther("-0.2"), parseEther("0.2")]
+      );
+    });
 
-      //await liquidityPool.connect(addrs[0]).deposit()
+    it("Gives router contract SPC allowance and transfers them to LP", async () => {
+      await expect(() =>
+        spaceRouter
+          .connect(addrs[0])
+          .addLiquidity(parseEther("1"), { value: parseEther("0.2") })
+      ).to.changeTokenBalances(
+        spaceCoin,
+        [addrs[0], liquidityPool],
+        [parseEther("-1"), parseEther("1")]
+      );
     });
   });
 });

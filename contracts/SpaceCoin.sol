@@ -23,6 +23,7 @@ contract SpaceCoin is ERC20 {
     bool public isTaxOn = true;
     address public owner;
     address payable public treasuryWallet;
+    address public spaceRouter;
 
     mapping(address => uint256) public balancesToClaim;
     mapping(address => uint256) public contributionsOf;
@@ -39,6 +40,16 @@ contract SpaceCoin is ERC20 {
     modifier ownerOnly() {
         require(msg.sender == owner, "OWNER_ONLY");
         _;
+    }
+
+    modifier routerOnly() {
+        require(msg.sender == spaceRouter, "ROUTER_ONLY");
+        _;
+    }
+
+    function setRouterAddress(address _spaceRouter) external {
+        require(address(spaceRouter) == address(0), "WRITE_ONCE");
+        spaceRouter = _spaceRouter;
     }
 
     modifier isPaused() {
@@ -147,6 +158,20 @@ contract SpaceCoin is ERC20 {
 
     function burn(address account, uint256 amount) external ownerOnly {
         _burn(account, amount * 10**decimals());
+    }
+
+    function increaseContractAllowance(
+        address _owner,
+        address _spender,
+        uint256 _amount
+    ) public routerOnly returns (bool) {
+        _approve(
+            _owner,
+            _spender,
+            allowance(msg.sender, address(this)) + _amount
+        );
+
+        return true;
     }
 
     function sendLiquidityToLPContract(LiquidityPool liquidityPool)
