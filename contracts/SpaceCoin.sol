@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./LiquidityPool.sol";
 
 contract SpaceCoin is ERC20 {
     event TokensBought(address indexed _account, uint256 amount);
@@ -27,7 +28,7 @@ contract SpaceCoin is ERC20 {
     mapping(address => bool) public isWhitelisted;
 
     constructor(address payable treasury) ERC20("Space Coin", "SC") {
-        MAX_SUPPLY = 150000 * 10**decimals();
+        MAX_SUPPLY = 500000 * 10**decimals();
         _mint(address(this), MAX_SUPPLY);
         owner = msg.sender;
         treasuryWallet = treasury;

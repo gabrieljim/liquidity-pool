@@ -15,7 +15,7 @@ describe("Space Coin Contract", function () {
   describe("Deployment", () => {
     it("Creates 500,000 available tokens", async () => {
       const supply = await spaceCoin.totalSupply();
-      expect(supply).to.be.equal("150000000000000000000000");
+      expect(supply).to.be.equal("500000000000000000000000");
     });
 
     it("Assigns the owner correctly", async () => {
@@ -97,21 +97,21 @@ describe("Space Coin Contract", function () {
       await spaceCoin.burn(spaceCoin.address, 100);
 
       const newSupply = await spaceCoin.totalSupply();
-      expect(newSupply).to.be.equal(parseEther("149900"));
+      expect(newSupply).to.be.equal(parseEther("499900"));
     });
 
     it("Mints and assigns correctly", async () => {
       await spaceCoin.burn(spaceCoin.address, 100);
 
       const supply = await spaceCoin.totalSupply();
-      expect(supply).to.be.equal(parseEther("149900"));
+      expect(supply).to.be.equal(parseEther("499900"));
 
       await spaceCoin.mint(owner.address, 100);
 
       const newSupply = await spaceCoin.totalSupply();
       const newOwnerBalance = await spaceCoin.balanceOf(owner.address);
 
-      expect(newSupply).to.be.equal(parseEther("150000"));
+      expect(newSupply).to.be.equal(parseEther("500000"));
       expect(newOwnerBalance).to.be.equal(parseEther("100"));
     });
   });
