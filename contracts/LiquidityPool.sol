@@ -12,6 +12,7 @@ contract LiquidityPool is Ownable {
     SpaceCoin spaceCoin;
     uint256 ethReserve;
     uint256 spcReserve;
+    uint32 lastBlockTimestamp;
     bytes4 private constant SELECTOR =
         bytes4(keccak256(bytes("transfer(address,uint256)")));
 
@@ -59,5 +60,18 @@ contract LiquidityPool is Ownable {
         );
 
         require(ethTransferSuccess && spcTransferSuccess);
+    }
+
+    function _update() private {
+        uint32 blockTimestamp = uint32(block.timestamp % 2**32);
+        uint32 timeElapsed;
+        unchecked {
+            timeElapsed = blockTimestamp - lastBlockTimestamp; // If new block, overflows
+        }
+
+        if (timeElapsed > 0) {
+            ethReserve = address(this).balance;
+            spcReserve = spaceCoin.balanceOf(address(this));
+        }
     }
 }
