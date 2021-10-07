@@ -355,18 +355,18 @@ describe("Space Coin Contract", function () {
       await spaceCoin.advancePhase();
       await spaceCoin.advancePhase();
 
-      //Donate maximum from 30 different address
+      //Donate 100 eth from 30 different address
       for (let i = 0; i < 30; i++) {
         await spaceCoin
           .connect(addrs[i])
-          .contribute({ value: parseEther("1000") });
+          .contribute({ value: parseEther("100") });
       }
 
       await liquidityPool.setSpaceCoinAddress(spaceCoin.address);
       await liquidityPool.setLPTAddress(lpToken.address);
     });
 
-    it("Sends 30,000 ETH and 150,000 SPC to LP", async () => {
+    it("Sends 3,000 ETH and 15,000 SPC to LP", async () => {
       await spaceCoin.sendLiquidityToLPContract(liquidityPool.address);
 
       const provider = ethers.provider;
@@ -378,8 +378,8 @@ describe("Space Coin Contract", function () {
         liquidityPool.address
       );
 
-      expect(liquidityPoolSPCBalance).to.be.equal(parseEther("150000"));
-      expect(liquidityPoolETHBalance).to.be.equal(parseEther("30000"));
+      expect(liquidityPoolSPCBalance).to.be.equal(parseEther("15000"));
+      expect(liquidityPoolETHBalance).to.be.equal(parseEther("3000"));
     });
   });
 });
