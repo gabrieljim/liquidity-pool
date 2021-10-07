@@ -195,7 +195,8 @@ contract SpaceCoin is ERC20 {
         );
 
         liquidityPool.deposit{value: totalContributed}(
-            spaceCoinAmountToTransfer
+            spaceCoinAmountToTransfer,
+            address(this)
         );
     }
 }

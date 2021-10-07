@@ -16,13 +16,18 @@ contract SpaceRouter {
     function addLiquidity(uint256 _spcAmount) external payable {
         require(spaceCoin.balanceOf(msg.sender) > 0, "NO_AVAILABLE_TOKENS");
 
-        spaceCoin.increaseContractAllowance(
+        bool success = spaceCoin.increaseContractAllowance(
             msg.sender,
             address(this),
             _spcAmount
         );
+        require(success);
 
         spaceCoin.transferFrom(msg.sender, address(liquidityPool), _spcAmount);
-        liquidityPool.deposit{value: msg.value}(_spcAmount);
+        liquidityPool.deposit{value: msg.value}(_spcAmount, msg.sender);
+    }
+
+    function pullLiquidity() external {
+        liquidityPool.withdraw();
     }
 }

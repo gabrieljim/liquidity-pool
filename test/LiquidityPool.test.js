@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { parseEther } = require("ethers/lib/utils");
 const { ethers } = require("hardhat");
 
-describe.only("Liquidity Pool Contract", function () {
+describe("Liquidity Pool Contract", function () {
   let owner,
     addr1,
     addr2,
@@ -65,6 +65,19 @@ describe.only("Liquidity Pool Contract", function () {
       expect(liquidityPoolETHBalance).to.be.equal(parseEther("20000"));
     });
 
+    it("Mints initial LP tokens and assigns to SpaceCoin contract", async () => {
+      const lpOfSpaceCoin = await lpToken.balanceOf(spaceCoin.address);
+
+      /*
+       * SpaceCoin contract sent 20k eth and 100k tokens, so it should have
+       * sqrt(20,000 * 100,000), around 44,721.35 LP tokens
+       */
+      expect(lpOfSpaceCoin).to.be.within(
+        parseEther("44721"),
+        parseEther("44722")
+      );
+    });
+
     it("Transfers ETH to LP", async () => {
       await expect(() =>
         spaceRouter
@@ -87,5 +100,40 @@ describe.only("Liquidity Pool Contract", function () {
         [parseEther("-1"), parseEther("1")]
       );
     });
+
+    it("Mints and assigns LP tokens", async () => {
+      await spaceRouter
+        .connect(addrs[0])
+        .addLiquidity(parseEther("1"), { value: parseEther("0.2") });
+
+      const lpBalance = await lpToken.balanceOf(addrs[0].address);
+
+      /*
+       * Address sent 0.2 eth and 1 token, math is:
+       *
+       *  liquidity = Math.min(
+       *    (ethAmount * totalSupply) / ethReserve,
+       *    (spcAmount * totalSupply) / spcReserve
+       *  );
+       *
+       *  Total LP supply right now is around 44,721.35 LP tokens, ETH reserve is 20k, and SPC reserve is 100k so
+       *
+       *  (0.2 * 44,721.35) / 20,000 = ~ 0.44 tokens
+       *  (  1 * 44,721.35) / 20,000 = ~ 2.23 tokens
+       *
+       *  Math.min() gets the smaller value, so user should have 0.44 tokens
+       *
+       */
+      expect(lpBalance).to.be.within(parseEther("0.44"), parseEther("0.45"));
+    });
+  });
+
+  describe("Withdrawing", () => {
+    // it.only("Deposits and withdraws the same amount", async () => {
+    //   await spaceRouter
+    //     .connect(addrs[0])
+    //     .addLiquidity(parseEther("1"), { value: parseEther("0.2") });
+    //   await spaceRouter.connect(addrs[0]).pullLiquidity();
+    // });
   });
 });

@@ -27,7 +27,7 @@ contract LiquidityPool is Ownable {
         spaceCoin = _spaceCoin;
     }
 
-    function deposit(uint256 spcAmount) external payable {
+    function deposit(uint256 spcAmount, address account) external payable {
         _update();
         uint256 liquidity;
         uint256 totalSupply = lpToken.totalSupply();
@@ -42,7 +42,7 @@ contract LiquidityPool is Ownable {
             liquidity = Babylonian.sqrt(ethAmount * spcAmount);
         }
 
-        lpToken.mint(msg.sender, liquidity);
+        lpToken.mint(account, liquidity);
     }
 
     function withdraw() external {
@@ -60,7 +60,7 @@ contract LiquidityPool is Ownable {
             abi.encodeWithSelector(SELECTOR, msg.sender, amount1)
         );
 
-        require(ethTransferSuccess && spcTransferSuccess);
+        require(ethTransferSuccess && spcTransferSuccess, "FAILED_TRANSFER");
     }
 
     function _update() private {
