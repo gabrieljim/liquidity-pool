@@ -3,13 +3,17 @@ const { parseEther } = require("ethers/lib/utils");
 const { ethers } = require("hardhat");
 
 describe("Space Coin Contract", function () {
-  let owner, addr1, addr2, addrs, spaceCoin, treasury;
+  let owner, addr1, addr2, addrs, spaceCoin, treasury, liquidityPool;
 
   beforeEach(async () => {
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
+
     const SpaceCoin = await ethers.getContractFactory("SpaceCoin");
     treasury = addrs[35];
     spaceCoin = await SpaceCoin.deploy(treasury.address);
+
+    const LiquidityPool = await ethers.getContractFactory("LiquidityPool");
+    liquidityPool = await LiquidityPool.deploy();
   });
 
   describe("Deployment", () => {
@@ -73,6 +77,14 @@ describe("Space Coin Contract", function () {
     it("Only owner can add an address to whitelist", async () => {
       await expect(
         spaceCoin.connect(addr1).addToWhitelist(addr1.address)
+      ).to.be.revertedWith("OWNER_ONLY");
+    });
+
+    it("Only owner can send fund to LP", async () => {
+      await expect(
+        spaceCoin
+          .connect(addr1)
+          .sendLiquidityToLPContract(liquidityPool.address)
       ).to.be.revertedWith("OWNER_ONLY");
     });
   });
@@ -326,6 +338,14 @@ describe("Space Coin Contract", function () {
       const balanceOf = await spaceCoin.balanceOf(treasury.address);
 
       expect(balanceOf).to.be.equal(parseEther("0.02"));
+    });
+  });
+
+  describe("Sending funds to liquidity pool", () => {
+    it("Can only send funds on the OPEN phase", async () => {
+      await expect(
+        spaceCoin.sendLiquidityToLPContract(liquidityPool.address)
+      ).to.be.revertedWith("NOT_LAST_PHASE");
     });
   });
 });

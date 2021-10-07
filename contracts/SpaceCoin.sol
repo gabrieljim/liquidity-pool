@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./LiquidityPool.sol";
+import "hardhat/console.sol";
 
 contract SpaceCoin is ERC20 {
     event TokensBought(address indexed _account, uint256 amount);
@@ -146,5 +147,29 @@ contract SpaceCoin is ERC20 {
 
     function burn(address account, uint256 amount) external ownerOnly {
         _burn(account, amount * 10**decimals());
+    }
+
+    function sendLiquidityToLPContract(LiquidityPool liquidityPool)
+        external
+        ownerOnly
+    {
+        require(currentPhase == Phase.OPEN, "NOT_LAST_PHASE");
+
+        /*
+         *  Max supply is 500,000 tokens, max total accepted contributions is 30,000 eth
+         *  The maximum value spaceCoinAmountToTransfer can be is 30k eth * 5, so 150,000 tokens
+         *  If 30k eth is reached, we'd have 350,000 available tokens, so we can count on
+         *  this function sending the appropiate amount
+         */
+        uint256 spaceCoinAmountToTransfer = totalContributed * 5;
+        bool success = transfer(
+            address(liquidityPool),
+            spaceCoinAmountToTransfer
+        );
+        require(success);
+
+        liquidityPool.deposit{value: totalContributed}(
+            spaceCoinAmountToTransfer
+        );
     }
 }

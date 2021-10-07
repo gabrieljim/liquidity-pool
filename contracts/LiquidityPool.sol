@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./LPT.sol";
 import "./SpaceCoin.sol";
+import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@uniswap/lib/contracts/libraries/Babylonian.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -26,9 +27,10 @@ contract LiquidityPool is Ownable {
         spaceCoin = _spaceCoin;
     }
 
-    function deposit(uint256 ethAmount, uint256 spcAmount) external {
+    function deposit(uint256 spcAmount) external payable {
         uint256 liquidity;
         uint256 totalSupply = lpToken.totalSupply();
+        uint256 ethAmount = msg.value;
 
         if (totalSupply > 0) {
             liquidity = Math.min(
