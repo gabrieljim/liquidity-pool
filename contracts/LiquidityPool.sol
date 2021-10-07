@@ -14,8 +14,6 @@ contract LiquidityPool is Ownable {
     uint256 ethReserve;
     uint256 spcReserve;
     uint32 lastBlockTimestamp;
-    bytes4 private constant SELECTOR =
-        bytes4(keccak256(bytes("transfer(address,uint256)")));
 
     function setLPTAddress(LPT _lpToken) external onlyOwner {
         require(address(lpToken) == address(0), "WRITE_ONCE");
@@ -45,20 +43,19 @@ contract LiquidityPool is Ownable {
         lpToken.mint(account, liquidity);
     }
 
-    function withdraw() external {
-        uint256 liquidity = lpToken.balanceOf(msg.sender);
+    function withdraw(address account) external {
+        uint256 liquidity = lpToken.balanceOf(account);
         require(liquidity != 0, "NO_AVAILABLE_TOKENS");
 
         uint256 totalSupply = lpToken.totalSupply();
-        uint256 amount0 = (liquidity / totalSupply) * ethReserve;
-        uint256 amount1 = (liquidity / totalSupply) * spcReserve;
 
-        lpToken.burn(msg.sender, liquidity);
+        uint256 ethAmount = (ethReserve * liquidity) / totalSupply;
+        uint256 spcAmount = (spcReserve * liquidity) / totalSupply;
 
-        (bool ethTransferSuccess, ) = msg.sender.call{value: amount0}("");
-        (bool spcTransferSuccess, ) = address(spaceCoin).call(
-            abi.encodeWithSelector(SELECTOR, msg.sender, amount1)
-        );
+        lpToken.burn(account, liquidity);
+
+        (bool ethTransferSuccess, ) = account.call{value: ethAmount}("");
+        bool spcTransferSuccess = spaceCoin.transfer(account, spcAmount);
 
         require(ethTransferSuccess && spcTransferSuccess, "FAILED_TRANSFER");
     }

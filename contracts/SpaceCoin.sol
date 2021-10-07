@@ -106,7 +106,7 @@ contract SpaceCoin is ERC20 {
         uint256 tokensToClaim = balancesToClaim[msg.sender];
         balancesToClaim[msg.sender] = 0;
 
-        _transfer(address(this), msg.sender, tokensToClaim);
+        super._transfer(address(this), msg.sender, tokensToClaim);
     }
 
     function advancePhase() external ownerOnly {
@@ -133,20 +133,19 @@ contract SpaceCoin is ERC20 {
         return isWhitelisted[account] || currentPhase != Phase.SEED;
     }
 
-    function transfer(address recipient, uint256 amount)
-        public
-        override
-        returns (bool)
-    {
+    function _transfer(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) internal override {
         uint256 amountToTake;
         if (isTaxOn) {
             amountToTake = (TAX * amount) / 100;
         }
         uint256 amountToTransfer = amount - amountToTake;
 
-        _transfer(msg.sender, recipient, amountToTransfer);
-        _transfer(msg.sender, treasuryWallet, amountToTake);
-        return true;
+        super._transfer(sender, recipient, amountToTransfer);
+        super._transfer(sender, treasuryWallet, amountToTake);
     }
 
     function mint(address account, uint256 amount) external ownerOnly {
@@ -188,7 +187,7 @@ contract SpaceCoin is ERC20 {
          */
         uint256 spaceCoinAmountToTransfer = totalContributed * 5;
 
-        _transfer(
+        super._transfer(
             address(this),
             address(liquidityPool),
             spaceCoinAmountToTransfer
