@@ -28,6 +28,6 @@ contract SpaceRouter {
     }
 
     function pullLiquidity() external {
-        liquidityPool.withdraw();
+        liquidityPool.withdraw(msg.sender);
     }
 }
