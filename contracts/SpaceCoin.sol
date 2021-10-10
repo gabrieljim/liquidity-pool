@@ -47,7 +47,7 @@ contract SpaceCoin is ERC20 {
         _;
     }
 
-    function setRouterAddress(address _spaceRouter) external {
+    function setRouterAddress(address _spaceRouter) external ownerOnly {
         require(address(spaceRouter) == address(0), "WRITE_ONCE");
         spaceRouter = _spaceRouter;
     }
