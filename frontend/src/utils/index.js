@@ -5,7 +5,7 @@ import LiquidityPool from "../artifacts/contracts/LiquidityPool.sol/LiquidityPoo
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
 
-const contracts = {
+export const contracts = {
   SPACE_COIN: {
     abi: SpaceCoin.abi,
     address: "0x326f6C56468B02367900eE8eEF183d16b102538E",
@@ -38,6 +38,8 @@ const mapErrorToFriendlyMessage = (error) => {
       return "This is meant for the owner! What are you doing here?";
     case "FUNDS_MOVED_TO_LP":
       return "Funds have been already moved to the liquidity pool!";
+    case "NOT_LAST_PHASE":
+      return "Not at OPEN phase yet!";
     case "CONTRACT_PAUSED":
       return "Contract is paused!";
     case "NOT_ALLOWED":
@@ -58,6 +60,7 @@ const getErrorFromReversion = (revertReason) => {
   const revertErrors = [
     "NOT_ALLOWED",
     "OWNER_ONLY",
+    "NOT_LAST_PHASE",
     "FUNDS_MOVED_TO_LP",
     "CONTRACT_PAUSED",
     "User denied transaction",
