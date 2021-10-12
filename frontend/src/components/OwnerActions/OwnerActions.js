@@ -1,6 +1,9 @@
 import React from "react";
 import { toast } from "react-toastify";
-import { callContractMethod } from "../../utils";
+import {
+  callContractMethod,
+  handleContractInteractionResponse,
+} from "../../utils";
 import "./styles.css";
 
 const OwnerActions = ({ contract }) => {
@@ -9,15 +12,7 @@ const OwnerActions = ({ contract }) => {
       contract.advancePhase()
     );
 
-    if (error) {
-      return toast.error(error);
-    }
-
-    toast.success(
-      "Transaction sent! Waiting for confirmation from the network..."
-    );
-    await result.wait();
-    toast.success("Transaction confirmed!");
+    handleContractInteractionResponse(result, error, toast);
   };
 
   const toggleTax = async () => {
@@ -25,15 +20,7 @@ const OwnerActions = ({ contract }) => {
       contract.toggleTax()
     );
 
-    if (error) {
-      return toast.error(error);
-    }
-
-    toast.success(
-      "Transaction sent! Waiting for confirmation from the network..."
-    );
-    await result.wait();
-    toast.success("Transaction confirmed!");
+    handleContractInteractionResponse(result, error, toast);
   };
 
   const togglePause = async () => {
@@ -41,15 +28,7 @@ const OwnerActions = ({ contract }) => {
       contract.togglePauseContract()
     );
 
-    if (error) {
-      return toast.error(error);
-    }
-
-    toast.success(
-      "Transaction sent! Waiting for confirmation from the network..."
-    );
-    await result.wait();
-    toast.success("Transaction confirmed!");
+    handleContractInteractionResponse(result, error, toast);
   };
 
   return (

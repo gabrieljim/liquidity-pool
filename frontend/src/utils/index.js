@@ -54,6 +54,18 @@ export const handleContractCallError = (error) => {
   return errorReason;
 };
 
+export const handleContractInteractionResponse = async (result, error, toast) => {
+  if (error) {
+    return toast.error(error);
+  }
+
+  toast.success(
+    "Transaction sent! Waiting for confirmation from the network..."
+  );
+  await result.wait();
+  toast.success("Transaction confirmed!");
+};
+
 export const bigNumberToDecimal = (number) => {
   const decimals = BigNumber.from("10000000000000000"); //16 zeroes, the contract has 18 decimals so this would show 2
   const tokens = number.div(decimals).toString();

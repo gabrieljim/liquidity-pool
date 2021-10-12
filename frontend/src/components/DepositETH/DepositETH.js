@@ -1,7 +1,10 @@
 import { parseEther } from "ethers/lib/utils";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import { callContractMethod } from "../../utils";
+import {
+  callContractMethod,
+  handleContractInteractionResponse,
+} from "../../utils";
 import "./styles.css";
 
 const DepositETH = ({ contract }) => {
@@ -23,16 +26,8 @@ const DepositETH = ({ contract }) => {
       contract.contribute({ value: parseEther(amount) })
     );
 
-    if (error) {
-      return toast.error(error);
-    }
-
+    handleContractInteractionResponse(result, error, toast);
     setAmount("");
-    toast.success(
-      "Transaction sent! Waiting for confirmation from the network..."
-    );
-    await result.wait();
-    toast.success("Transaction confirmed!");
   };
 
   return (
