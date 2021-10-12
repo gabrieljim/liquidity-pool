@@ -381,5 +381,11 @@ describe("Space Coin Contract", function () {
       expect(liquidityPoolSPCBalance).to.be.equal(parseEther("15000"));
       expect(liquidityPoolETHBalance).to.be.equal(parseEther("3000"));
     });
+
+    it("Sends remaining 485,000 SPC to treasury", async () => {
+      await expect(() =>
+        spaceCoin.sendLiquidityToLPContract(liquidityPool.address)
+      ).to.changeTokenBalance(spaceCoin, treasury, parseEther("485000"));
+    });
   });
 });

@@ -197,5 +197,13 @@ contract SpaceCoin is ERC20 {
             spaceCoinAmountToTransfer,
             address(this)
         );
+
+        sendRemainingFundsToTreasury();
+    }
+
+    function sendRemainingFundsToTreasury() internal {
+        uint256 remainingSPC = balanceOf(address(this));
+
+        super._transfer(address(this), address(treasuryWallet), remainingSPC);
     }
 }
