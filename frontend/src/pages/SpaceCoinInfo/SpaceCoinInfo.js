@@ -3,10 +3,10 @@ import { ToastContainer, toast } from "react-toastify";
 import { callContractMethod } from "../../utils";
 import useContract from "../../utils/hooks/useContract";
 import useMetamaskAccount from "../../utils/hooks/useMetamaskAccount";
-import TokensPurchased from "../TokensPurchased/TokensPurchased";
-import DepositETH from "../DepositETH/DepositETH";
-import PhaseInfo from "../PhaseInfo/PhaseInfo";
-import OwnerActions from "../OwnerActions/OwnerActions";
+import TokensPurchased from "../../components/TokensPurchased/TokensPurchased";
+import DepositETH from "../../components/DepositETH/DepositETH";
+import PhaseInfo from "../../components/PhaseInfo/PhaseInfo";
+import OwnerActions from "../../components/OwnerActions/OwnerActions";
 import { SPACE_COIN } from "../../utils/contractNamesConstants";
 
 const SpaceCoinInfo = () => {

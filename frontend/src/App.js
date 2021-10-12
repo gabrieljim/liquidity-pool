@@ -1,5 +1,5 @@
 import "./App.css";
-import SpaceCoinInfo from "./components/SpaceCoinInfo/SpaceCoinInfo";
+import SpaceCoinInfo from "./pages/SpaceCoinInfo/SpaceCoinInfo";
 import "react-toastify/dist/ReactToastify.css";
 import "react-tabs/style/react-tabs.css";
 
