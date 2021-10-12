@@ -6,7 +6,7 @@ import "./styles.css";
 const PHASE = {
   0: { name: "SEED", limit: 15000 },
   1: { name: "GENERAL", limit: 30000 },
-  2: { name: "", limit: 30000 },
+  2: { name: "OPEN", limit: 30000 },
 };
 
 const PhaseInfo = ({ spaceCoin, account }) => {
