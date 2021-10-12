@@ -3,7 +3,9 @@
 Third project for the optilistic bootcamp.
 
 A liquidity pool that accepts depositing/withdrawing liquidit. 
+
 Mints LP tokens on deposit and burning them on withdrawal. 
+
 Allows swapping ETH/SPC.
 
 ## Running it
