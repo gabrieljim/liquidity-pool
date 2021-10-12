@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { parseEther } = require("ethers/lib/utils");
 const { ethers } = require("hardhat");
 
-describe.only("Liquidity Pool Contract", function () {
+describe("Liquidity Pool Contract", function () {
   let owner,
     addr1,
     addr2,
@@ -135,7 +135,7 @@ describe.only("Liquidity Pool Contract", function () {
       );
       const userBalanceBefore = await provider.getBalance(addrs[0].address);
 
-      await spaceRouter.connect(addrs[0]).pullLiquidity();
+      await spaceRouter.connect(addrsn[0]).pullLiquidity();
 
       const liquidityPoolETHBalanceAfter = await provider.getBalance(
         liquidityPool.address
@@ -176,6 +176,45 @@ describe.only("Liquidity Pool Contract", function () {
       expect(userBalanceAfter.sub(userBalanceBefore)).to.be.closeTo(
         parseEther("25"),
         parseEther("3")
+      );
+    });
+  });
+
+  describe("Swapping", () => {
+    it("Swaps 5 ETH for close to 25 SPC", async () => {
+      const balanceBeforeSwap = await spaceCoin.balanceOf(addrs[0].address);
+
+      await expect(() =>
+        spaceRouter.connect(addrs[0]).swapTokens(0, { value: parseEther("5") })
+      ).to.changeEtherBalances(
+        [liquidityPool, addrs[0]],
+        [parseEther("5"), parseEther("-5")]
+      );
+
+      const balanceAfterSwap = await spaceCoin.balanceOf(addrs[0].address);
+
+      expect(balanceAfterSwap.sub(balanceBeforeSwap)).to.be.closeTo(
+        parseEther("25"),
+        parseEther("2")
+      );
+    });
+
+    it("Swaps 5 SPC for close to 1 ETH", async () => {
+      const balanceBeforeSwap = await provider.getBalance(addrs[0].address);
+
+      await expect(() =>
+        spaceRouter.connect(addrs[0]).swapTokens(parseEther("5"))
+      ).to.changeTokenBalances(
+        spaceCoin,
+        [liquidityPool, addrs[0]],
+        [parseEther("4.9"), parseEther("-5")]
+      );
+
+      const balanceAfterSwap = await provider.getBalance(addrs[0].address);
+
+      expect(balanceAfterSwap.sub(balanceBeforeSwap)).to.be.closeTo(
+        parseEther("1"),
+        parseEther("1")
       );
     });
   });

@@ -30,4 +30,16 @@ contract SpaceRouter {
     function pullLiquidity() external {
         liquidityPool.withdraw(msg.sender);
     }
+
+    function swapTokens(uint256 _spcAmount) external payable {
+        bool success = spaceCoin.increaseContractAllowance(
+            msg.sender,
+            address(this),
+            _spcAmount
+        );
+        require(success);
+
+        spaceCoin.transferFrom(msg.sender, address(liquidityPool), _spcAmount);
+        liquidityPool.swap{value: msg.value}(msg.sender, _spcAmount);
+    }
 }

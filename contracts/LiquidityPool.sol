@@ -25,8 +25,52 @@ contract LiquidityPool is Ownable {
         spaceCoin = _spaceCoin;
     }
 
-    function deposit(uint256 spcAmount, address account) external payable {
+    function swap(address account, uint256 _spcAmount) external payable {
+        uint256 product = ethReserve * spcReserve;
+        uint256 amountToTransfer;
+
+        if (msg.value == 0) {
+            uint256 currentSPCBalance = spaceCoin.balanceOf(address(this));
+            uint256 _spcAmountMinusTax = _spcAmount - ((2 * _spcAmount) / 100);
+            uint256 addedBalance = spcReserve + _spcAmountMinusTax;
+
+            require(addedBalance == currentSPCBalance, "DID_NOT_TRANSFER");
+
+            /*
+             *
+             * 100 eth   * 500 spc = 50000
+             *      x    * 600 spc = 50000
+             *
+             *  x = 50000 / 600 = 83,33
+             *  user gets 100 - x = 16.67
+             */
+
+            uint256 x = product / (spcReserve + _spcAmountMinusTax);
+            amountToTransfer = ethReserve - x;
+
+            (bool success, ) = account.call{value: amountToTransfer}("");
+
+            require(success, "TRANSFER_FAILED");
+        } else {
+            /*
+             *
+             * 100 eth   * 500 spc = 50000
+             * 105 eth * y     = 50000
+             *
+             *  y = 50000 / 105 = 476,19
+             *  user gets 500 - y = 23,81
+             */
+
+            uint256 y = product / (ethReserve + msg.value);
+
+            amountToTransfer = spcReserve - y;
+
+            spaceCoin.transfer(account, amountToTransfer);
+        }
         _update();
+    }
+
+    function deposit(uint256 spcAmount, address account) external payable {
         uint256 liquidity;
         uint256 totalSupply = lpToken.totalSupply();
         uint256 ethAmount = msg.value;
@@ -41,6 +85,7 @@ contract LiquidityPool is Ownable {
         }
 
         lpToken.mint(account, liquidity);
+        _update();
     }
 
     function withdraw(address account) external {
@@ -58,6 +103,7 @@ contract LiquidityPool is Ownable {
         bool spcTransferSuccess = spaceCoin.transfer(account, spcAmount);
 
         require(ethTransferSuccess && spcTransferSuccess, "FAILED_TRANSFER");
+        _update();
     }
 
     function _update() private {
