@@ -7,6 +7,8 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 
 import useContract from "./utils/hooks/useContract";
 import { SPACE_COIN } from "./utils/contractNamesConstants";
+import ManageLiquidity from "./pages/ManageLiquidity/ManageLiquidity";
+import Trading from "./pages/Trading/Trading";
 
 const App = () => {
   const spaceCoin = useContract(SPACE_COIN);
@@ -25,8 +27,12 @@ const App = () => {
           <TabPanel>
             <SpaceCoinInfo />
           </TabPanel>
-          <TabPanel>Tab 1</TabPanel>
-          <TabPanel>Tab 2</TabPanel>
+          <TabPanel>
+            <ManageLiquidity />
+          </TabPanel>
+          <TabPanel>
+            <Trading />
+          </TabPanel>
         </Tabs>
       ) : (
         "Please connect your wallet to use the dapp!"
