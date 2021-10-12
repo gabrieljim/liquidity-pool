@@ -19,7 +19,8 @@ contract SpaceCoin is ERC20 {
     uint256 public MAX_SUPPLY;
     uint256 public constant TAX = 2; // 0.02, 2% of the tx;
     uint256 public totalContributed;
-    bool public isContractPaused = false;
+    bool public isContractPaused;
+    bool public fundsAlreadyMoved;
     bool public isTaxOn = true;
     address public owner;
     address payable public treasuryWallet;
@@ -47,6 +48,11 @@ contract SpaceCoin is ERC20 {
         _;
     }
 
+    modifier areFundsMoved() {
+        require(!fundsAlreadyMoved, "FUNDS_MOVED_TO_LP");
+        _;
+    }
+
     function setRouterAddress(address _spaceRouter) external ownerOnly {
         require(address(spaceRouter) == address(0), "WRITE_ONCE");
         spaceRouter = _spaceRouter;
@@ -57,7 +63,7 @@ contract SpaceCoin is ERC20 {
         _;
     }
 
-    function contribute() external payable isPaused {
+    function contribute() external payable isPaused areFundsMoved {
         require(canUserContribute(msg.sender), "NOT_ALLOWED");
         require(
             contributionsOf[msg.sender] + msg.value <= getIndividualLimit(),
@@ -100,7 +106,7 @@ contract SpaceCoin is ERC20 {
         }
     }
 
-    function claimTokens() external isPaused {
+    function claimTokens() external isPaused areFundsMoved {
         require(currentPhase == Phase.OPEN, "NOT_LAST_PHASE");
         require(balancesToClaim[msg.sender] > 0, "NO_AVAILABLE_FUNDS");
         uint256 tokensToClaim = balancesToClaim[msg.sender];
@@ -176,8 +182,11 @@ contract SpaceCoin is ERC20 {
     function sendLiquidityToLPContract(LiquidityPool liquidityPool)
         external
         ownerOnly
+        areFundsMoved
     {
         require(currentPhase == Phase.OPEN, "NOT_LAST_PHASE");
+
+        fundsAlreadyMoved = true;
 
         /*
          *  Max supply is 500,000 tokens, max total accepted contributions is 30,000 eth

@@ -16,6 +16,8 @@ const mapErrorToFriendlyMessage = (error) => {
   switch (error) {
     case "OWNER_ONLY":
       return "This is meant for the owner! What are you doing here?";
+    case "FUNDS_MOVED_TO_LP":
+      return "Funds have been already moved to the liquidity pool!";
     case "CONTRACT_PAUSED":
       return "Contract is paused!";
     case "NOT_ALLOWED":
@@ -35,6 +37,8 @@ const getErrorFromReversion = (revertReason) => {
   console.log(revertReason);
   const revertErrors = [
     "NOT_ALLOWED",
+    "OWNER_ONLY",
+    "FUNDS_MOVED_TO_LP",
     "CONTRACT_PAUSED",
     "User denied transaction",
     "errorSignature=null",
@@ -54,7 +58,11 @@ export const handleContractCallError = (error) => {
   return errorReason;
 };
 
-export const handleContractInteractionResponse = async (result, error, toast) => {
+export const handleContractInteractionResponse = async (
+  result,
+  error,
+  toast
+) => {
   if (error) {
     return toast.error(error);
   }
