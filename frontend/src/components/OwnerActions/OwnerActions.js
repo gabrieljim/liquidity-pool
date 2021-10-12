@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { toast } from "react-toastify";
 import {
   callContractMethod,
+  contracts,
   handleContractInteractionResponse,
 } from "../../utils";
 import "./styles.css";
@@ -28,6 +29,14 @@ const OwnerActions = ({ spaceCoin }) => {
   const advancePhase = async () => {
     const { result, error } = await callContractMethod(() =>
       spaceCoin.advancePhase()
+    );
+
+    handleContractInteractionResponse(result, error, toast);
+  };
+
+  const moveFunds = async () => {
+    const { result, error } = await callContractMethod(() =>
+      spaceCoin.sendLiquidityToLPContract(contracts.LIQUIDITY_POOL.address)
     );
 
     handleContractInteractionResponse(result, error, toast);
@@ -62,7 +71,7 @@ const OwnerActions = ({ spaceCoin }) => {
         Toggle pause
       </button>
       {!areFundsMoved && (
-        <button className="cool-button toggle-tax" onClick={togglePause}>
+        <button className="cool-button toggle-tax" onClick={moveFunds}>
           Move funds to LP
         </button>
       )}
