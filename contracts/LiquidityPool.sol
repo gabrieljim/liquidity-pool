@@ -28,6 +28,8 @@ contract LiquidityPool is Ownable {
     function swap(address account, uint256 _spcAmount) external payable {
         uint256 product = ethReserve * spcReserve;
         uint256 amountToTransfer;
+        uint256 amountToTake;
+        uint256 totalAmountToTransfer;
 
         if (msg.value == 0) {
             uint256 currentSPCBalance = spaceCoin.balanceOf(address(this));
@@ -48,7 +50,10 @@ contract LiquidityPool is Ownable {
             uint256 x = product / (spcReserve + _spcAmountMinusTax);
             amountToTransfer = ethReserve - x;
 
-            (bool success, ) = account.call{value: amountToTransfer}("");
+            amountToTake = (1 * amountToTransfer) / 100;
+            totalAmountToTransfer = amountToTransfer - amountToTake;
+
+            (bool success, ) = account.call{value: totalAmountToTransfer}("");
 
             require(success, "TRANSFER_FAILED");
         } else {
@@ -62,10 +67,12 @@ contract LiquidityPool is Ownable {
              */
 
             uint256 y = product / (ethReserve + msg.value);
-
             amountToTransfer = spcReserve - y;
 
-            spaceCoin.transfer(account, amountToTransfer);
+            amountToTake = (1 * amountToTransfer) / 100;
+            totalAmountToTransfer = amountToTransfer - amountToTake;
+
+            spaceCoin.transfer(account, totalAmountToTransfer);
         }
         _update();
     }

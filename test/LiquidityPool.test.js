@@ -135,7 +135,7 @@ describe("Liquidity Pool Contract", function () {
       );
       const userBalanceBefore = await provider.getBalance(addrs[0].address);
 
-      await spaceRouter.connect(addrsn[0]).pullLiquidity();
+      await spaceRouter.connect(addrs[0]).pullLiquidity();
 
       const liquidityPoolETHBalanceAfter = await provider.getBalance(
         liquidityPool.address
