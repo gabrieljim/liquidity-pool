@@ -2,11 +2,10 @@
 
 Third project for the optilistic bootcamp.
 
-A liquidity pool that accepts depositing/withdrawing liquidity. 
-
-Mints LP tokens on deposit and burning them on withdrawal. 
-
-Allows swapping ETH/SPC.
+- Accepts depositing/withdrawing liquidity. 
+- Mints LP tokens on deposit and burning them on withdrawal. 
+- Allows swapping ETH/SPC.
+- 1% tax for every trade
 
 ## Running it
 
