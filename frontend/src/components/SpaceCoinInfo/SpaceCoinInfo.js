@@ -7,36 +7,37 @@ import TokensPurchased from "../TokensPurchased/TokensPurchased";
 import DepositETH from "../DepositETH/DepositETH";
 import PhaseInfo from "../PhaseInfo/PhaseInfo";
 import OwnerActions from "../OwnerActions/OwnerActions";
+import { SPACE_COIN } from "../../utils/contractNamesConstants";
 
 const SpaceCoinInfo = () => {
   const [owner, setOwner] = useState(null);
-  const contract = useContract(true);
+  const spaceCoin = useContract(SPACE_COIN, true);
   const account = useMetamaskAccount();
 
   const getOwner = useCallback(async () => {
-    const { result, error } = await callContractMethod(contract.owner);
+    const { result, error } = await callContractMethod(spaceCoin.owner);
 
     if (error) {
       return toast.error(error);
     }
 
     setOwner(result.toLowerCase());
-  }, [contract]);
+  }, [spaceCoin]);
 
   useEffect(() => {
-    if (contract && account) {
+    if (spaceCoin && account) {
       getOwner();
     }
-  }, [contract, account, getOwner]);
+  }, [spaceCoin, account, getOwner]);
 
   return (
     <div>
-      {account && contract ? (
+      {account && spaceCoin ? (
         <>
-          <TokensPurchased contract={contract} account={account} />
-          <PhaseInfo contract={contract} account={account} />
-          {account === owner && <OwnerActions contract={contract} />}
-          <DepositETH contract={contract} account={account} />
+          <TokensPurchased spaceCoin={spaceCoin} account={account} />
+          <PhaseInfo spaceCoin={spaceCoin} account={account} />
+          {account === owner && <OwnerActions spaceCoin={spaceCoin} />}
+          <DepositETH spaceCoin={spaceCoin} account={account} />
           <ToastContainer />
         </>
       ) : (

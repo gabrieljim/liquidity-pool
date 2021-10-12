@@ -6,14 +6,15 @@ import "react-tabs/style/react-tabs.css";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 
 import useContract from "./utils/hooks/useContract";
+import { SPACE_COIN } from "./utils/contractNamesConstants";
 
 const App = () => {
-  const contract = useContract();
+  const spaceCoin = useContract(SPACE_COIN);
 
   return (
     <div className="App">
       <h1>Space Coin</h1>
-      {contract ? (
+      {spaceCoin ? (
         <Tabs>
           <TabList>
             <Tab>Space Coin Info</Tab>

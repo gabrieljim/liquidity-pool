@@ -9,7 +9,7 @@ const PHASE = {
   2: { name: "", limit: 30000 },
 };
 
-const PhaseInfo = ({ contract, account }) => {
+const PhaseInfo = ({ spaceCoin, account }) => {
   const [phase, setPhase] = useState();
   const [totalContributed, setTotalContributed] = useState();
   const [isTaxOn, setIsTaxOn] = useState();
@@ -17,7 +17,7 @@ const PhaseInfo = ({ contract, account }) => {
 
   const getPhase = useCallback(async () => {
     const { result, error } = await callContractMethod(() =>
-      contract.currentPhase()
+      spaceCoin.currentPhase()
     );
 
     if (error) {
@@ -25,11 +25,11 @@ const PhaseInfo = ({ contract, account }) => {
     }
 
     setPhase(PHASE[result]);
-  }, [contract]);
+  }, [spaceCoin]);
 
   const getTotalContributed = useCallback(async () => {
     const { result, error } = await callContractMethod(() =>
-      contract.totalContributed()
+      spaceCoin.totalContributed()
     );
 
     if (error) {
@@ -38,11 +38,11 @@ const PhaseInfo = ({ contract, account }) => {
 
     const totalContributedDecimal = bigNumberToDecimal(result);
     setTotalContributed(totalContributedDecimal);
-  }, [contract]);
+  }, [spaceCoin]);
 
   const getTaxOnOrOff = useCallback(async () => {
     const { result, error } = await callContractMethod(() =>
-      contract.isTaxOn()
+      spaceCoin.isTaxOn()
     );
 
     if (error) {
@@ -50,11 +50,11 @@ const PhaseInfo = ({ contract, account }) => {
     }
 
     setIsTaxOn(result);
-  }, [contract]);
+  }, [spaceCoin]);
 
   const getPausedOrNot = useCallback(async () => {
     const { result, error } = await callContractMethod(() =>
-      contract.isContractPaused()
+      spaceCoin.isContractPaused()
     );
 
     if (error) {
@@ -62,7 +62,7 @@ const PhaseInfo = ({ contract, account }) => {
     }
 
     setIsPaused(result);
-  }, [contract]);
+  }, [spaceCoin]);
 
   const getPhaseInfo = useCallback(() => {
     getPhase();
@@ -76,9 +76,9 @@ const PhaseInfo = ({ contract, account }) => {
   }, [getPhaseInfo]);
 
   useEffect(() => {
-    contract.on("TokensBought", getPhaseInfo);
-    contract.on("OwnerAction", getPhaseInfo);
-  }, [contract, getPhaseInfo]);
+    spaceCoin.on("TokensBought", getPhaseInfo);
+    spaceCoin.on("OwnerAction", getPhaseInfo);
+  }, [spaceCoin, getPhaseInfo]);
 
   return phase && totalContributed >= 0 ? (
     <div className="phase-info-container">

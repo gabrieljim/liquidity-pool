@@ -4,12 +4,12 @@ import "./styles.css";
 
 import { bigNumberToDecimal, callContractMethod } from "../../utils";
 
-const TokensPurchased = ({ contract, account }) => {
+const TokensPurchased = ({ spaceCoin, account }) => {
   const [tokens, setTokens] = useState(null);
 
   const getTokensAssigned = useCallback(async () => {
     const { result, error } = await callContractMethod(() =>
-      contract.balancesToClaim(account)
+      spaceCoin.balancesToClaim(account)
     );
 
     if (error) {
@@ -18,16 +18,16 @@ const TokensPurchased = ({ contract, account }) => {
 
     const tokens = bigNumberToDecimal(result);
     setTokens(tokens); //Divided by 100 so to move the comma two spaces left
-  }, [account, contract]);
+  }, [account, spaceCoin]);
 
   useEffect(() => {
     getTokensAssigned();
-  }, [contract, account, getTokensAssigned]);
+  }, [spaceCoin, account, getTokensAssigned]);
 
   useEffect(() => {
-    const filter = contract.filters.TokensBought(account);
-    contract.on(filter, () => getTokensAssigned());
-  }, [contract, account, getTokensAssigned]);
+    const filter = spaceCoin.filters.TokensBought(account);
+    spaceCoin.on(filter, () => getTokensAssigned());
+  }, [spaceCoin, account, getTokensAssigned]);
 
   return tokens >= 0 ? (
     <div className="wallet-info">

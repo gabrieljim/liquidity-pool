@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { toast } from "react-toastify";
 import {
   callContractMethod,
@@ -6,10 +6,28 @@ import {
 } from "../../utils";
 import "./styles.css";
 
-const OwnerActions = ({ contract }) => {
+const OwnerActions = ({ spaceCoin }) => {
+  const [areFundsMoved, setAreFundsMoved] = useState();
+
+  const getFundsMovedOrNot = useCallback(async () => {
+    const { result, error } = await callContractMethod(() =>
+      spaceCoin.fundsAlreadyMoved()
+    );
+
+    if (error) {
+      return toast.error(error);
+    }
+
+    setAreFundsMoved(result);
+  }, [spaceCoin]);
+
+  useEffect(() => {
+    getFundsMovedOrNot();
+  }, [getFundsMovedOrNot]);
+
   const advancePhase = async () => {
     const { result, error } = await callContractMethod(() =>
-      contract.advancePhase()
+      spaceCoin.advancePhase()
     );
 
     handleContractInteractionResponse(result, error, toast);
@@ -17,7 +35,7 @@ const OwnerActions = ({ contract }) => {
 
   const toggleTax = async () => {
     const { result, error } = await callContractMethod(() =>
-      contract.toggleTax()
+      spaceCoin.toggleTax()
     );
 
     handleContractInteractionResponse(result, error, toast);
@@ -25,7 +43,7 @@ const OwnerActions = ({ contract }) => {
 
   const togglePause = async () => {
     const { result, error } = await callContractMethod(() =>
-      contract.togglePauseContract()
+      spaceCoin.togglePauseContract()
     );
 
     handleContractInteractionResponse(result, error, toast);
@@ -43,6 +61,11 @@ const OwnerActions = ({ contract }) => {
       <button className="cool-button toggle-tax" onClick={togglePause}>
         Toggle pause
       </button>
+      {!areFundsMoved && (
+        <button className="cool-button toggle-tax" onClick={togglePause}>
+          Move funds to LP
+        </button>
+      )}
     </div>
   );
 };

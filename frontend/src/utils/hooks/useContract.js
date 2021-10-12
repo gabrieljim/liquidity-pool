@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import { getContractInstance } from "..";
 
-const useContract = (withSigner = false) => {
+const useContract = (contractToGet, withSigner = false) => {
   const [contract, setContract] = useState(undefined);
 
   useEffect(() => {
     (async () => {
-      const contractInstance = await getContractInstance(withSigner);
+      const contractInstance = await getContractInstance(
+        contractToGet,
+        withSigner
+      );
       setContract(contractInstance);
     })();
-  }, [withSigner]);
+  }, [contractToGet, withSigner]);
 
   return contract;
 };

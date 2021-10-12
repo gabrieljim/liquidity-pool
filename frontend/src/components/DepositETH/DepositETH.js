@@ -7,7 +7,7 @@ import {
 } from "../../utils";
 import "./styles.css";
 
-const DepositETH = ({ contract }) => {
+const DepositETH = ({ spaceCoin }) => {
   const [amount, setAmount] = useState("");
 
   const handleAmountChange = (e) => {
@@ -23,7 +23,7 @@ const DepositETH = ({ contract }) => {
     }
 
     const { result, error } = await callContractMethod(() =>
-      contract.contribute({ value: parseEther(amount) })
+      spaceCoin.contribute({ value: parseEther(amount) })
     );
 
     handleContractInteractionResponse(result, error, toast);
