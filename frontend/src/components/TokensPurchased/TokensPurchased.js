@@ -17,7 +17,7 @@ const TokensPurchased = ({ spaceCoin, account }) => {
     }
 
     const tokens = bigNumberToDecimal(result);
-    setTokens(tokens); //Divided by 100 so to move the comma two spaces left
+    setTokens(tokens); 
   }, [account, spaceCoin]);
 
   useEffect(() => {
