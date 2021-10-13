@@ -40,6 +40,10 @@ const mapErrorToFriendlyMessage = (error) => {
       return "Funds have been already moved to the liquidity pool!";
     case "NOT_LAST_PHASE":
       return "Not at OPEN phase yet!";
+    case "NO_AVAILABLE_TOKENS":
+      return "Not enough SPC available!";
+    case "LAST_PHASE":
+      return "Already at last phase!";
     case "CONTRACT_PAUSED":
       return "Contract is paused!";
     case "NOT_ALLOWED":
@@ -61,6 +65,8 @@ const getErrorFromReversion = (revertReason) => {
     "NOT_ALLOWED",
     "OWNER_ONLY",
     "NOT_LAST_PHASE",
+    "NO_AVAILABLE_TOKENS",
+    "LAST_PHASE",
     "FUNDS_MOVED_TO_LP",
     "CONTRACT_PAUSED",
     "User denied transaction",
@@ -100,7 +106,7 @@ export const handleContractInteractionResponse = async (
 export const bigNumberToDecimal = (number) => {
   const decimals = BigNumber.from("10000000000000000"); //16 zeroes, the contract has 18 decimals so this would show 2
   const tokens = number.div(decimals).toString();
-  return tokens / 100;
+  return tokens / 100; //Divided by 100 so to move the comma two spaces left
 };
 
 export const callContractMethod = async (method) => {
