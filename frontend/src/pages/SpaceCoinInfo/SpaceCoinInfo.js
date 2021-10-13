@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { ToastContainer, toast } from "react-toastify";
 import { callContractMethod } from "../../utils";
+import { toast } from "react-toastify";
 import useContract from "../../utils/hooks/useContract";
 import useMetamaskAccount from "../../utils/hooks/useMetamaskAccount";
 import TokensPurchased from "../../components/TokensPurchased/TokensPurchased";
@@ -38,7 +38,6 @@ const SpaceCoinInfo = () => {
           <PhaseInfo spaceCoin={spaceCoin} account={account} />
           {account === owner && <OwnerActions spaceCoin={spaceCoin} />}
           <DepositETH spaceCoin={spaceCoin} account={account} />
-          <ToastContainer />
         </>
       ) : (
         "Updating... (you might need to refresh your browser)"

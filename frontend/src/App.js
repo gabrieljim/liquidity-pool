@@ -4,6 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "react-tabs/style/react-tabs.css";
 
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import { ToastContainer } from "react-toastify";
 
 import useContract from "./utils/hooks/useContract";
 import { SPACE_COIN } from "./utils/contractNamesConstants";
@@ -17,23 +18,26 @@ const App = () => {
     <div className="App">
       <h1>Space Coin</h1>
       {spaceCoin ? (
-        <Tabs>
-          <TabList>
-            <Tab>Space Coin Info</Tab>
-            <Tab>Manage Liquidity</Tab>
-            <Tab>Trading</Tab>
-          </TabList>
+        <>
+          <Tabs>
+            <TabList>
+              <Tab>Space Coin Info</Tab>
+              <Tab>Manage Liquidity</Tab>
+              <Tab>Trading</Tab>
+            </TabList>
 
-          <TabPanel>
-            <SpaceCoinInfo />
-          </TabPanel>
-          <TabPanel>
-            <ManageLiquidity />
-          </TabPanel>
-          <TabPanel>
-            <Trading />
-          </TabPanel>
-        </Tabs>
+            <TabPanel>
+              <SpaceCoinInfo />
+            </TabPanel>
+            <TabPanel>
+              <ManageLiquidity />
+            </TabPanel>
+            <TabPanel>
+              <Trading />
+            </TabPanel>
+          </Tabs>
+          <ToastContainer />
+        </>
       ) : (
         "Please connect your wallet to use the dapp!"
       )}
