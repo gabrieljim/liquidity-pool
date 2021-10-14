@@ -8,19 +8,19 @@ import { ethers } from "ethers";
 export const contracts = {
   SPACE_COIN: {
     abi: SpaceCoin.abi,
-    address: "0x326f6C56468B02367900eE8eEF183d16b102538E",
+    address: "0x0D369cF7A39857a6CAe2aE35f28Dc2A0A588789b",
   },
   LIQUIDITY_POOL: {
     abi: LiquidityPool.abi,
-    address: "0x343B0341458f709f5eC4777A945e0CdC58D73aCb",
+    address: "0xBD7A42cD59B86A4fE3ed895F3A57C903E072521e",
   },
   LPT: {
     abi: LPT.abi,
-    address: "0x510ACD46d7b903aA5845A63e51e9f5b022aC5C9c",
+    address: "0xCC65b735696aA150639DBd691b6E87E7CFA05785",
   },
   SPACE_ROUTER: {
     abi: SpaceRouter.abi,
-    address: "0x60C70Aa7996aC0282Eccdd6cB105FAc931819fDE",
+    address: "0xa730A14fEA7eC97bC59e61aeeC20695f7c72B5D6",
   },
 };
 

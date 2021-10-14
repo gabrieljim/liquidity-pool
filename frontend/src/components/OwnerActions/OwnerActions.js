@@ -24,7 +24,8 @@ const OwnerActions = ({ spaceCoin }) => {
 
   useEffect(() => {
     getFundsMovedOrNot();
-  }, [getFundsMovedOrNot]);
+    spaceCoin.on("FundsMoved", getFundsMovedOrNot);
+  }, [spaceCoin, getFundsMovedOrNot]);
 
   const advancePhase = async () => {
     const { result, error } = await callContractMethod(() =>

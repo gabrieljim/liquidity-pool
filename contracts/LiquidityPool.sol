@@ -9,6 +9,14 @@ import "@uniswap/lib/contracts/libraries/Babylonian.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract LiquidityPool is Ownable {
+    event LiquidityAdded(address indexed _account);
+    event LiquidityRemoved(address indexed _account);
+    event TradedTokens(
+        address indexed _account,
+        uint256 _ethTraded,
+        uint256 _spcTraded
+    );
+
     LPT lpToken;
     SpaceCoin spaceCoin;
     uint256 ethReserve;
@@ -18,6 +26,10 @@ contract LiquidityPool is Ownable {
     function setLPTAddress(LPT _lpToken) external onlyOwner {
         require(address(lpToken) == address(0), "WRITE_ONCE");
         lpToken = _lpToken;
+    }
+
+    function getReserves() external view returns (uint256, uint256) {
+        return (ethReserve, spcReserve);
     }
 
     function setSpaceCoinAddress(SpaceCoin _spaceCoin) external onlyOwner {
@@ -74,6 +86,7 @@ contract LiquidityPool is Ownable {
 
             spaceCoin.transfer(account, totalAmountToTransfer);
         }
+        emit TradedTokens(account, msg.value, _spcAmount);
         _update();
     }
 
@@ -92,6 +105,7 @@ contract LiquidityPool is Ownable {
         }
 
         lpToken.mint(account, liquidity);
+        emit LiquidityAdded(account);
         _update();
     }
 
@@ -110,6 +124,7 @@ contract LiquidityPool is Ownable {
         bool spcTransferSuccess = spaceCoin.transfer(account, spcAmount);
 
         require(ethTransferSuccess && spcTransferSuccess, "FAILED_TRANSFER");
+        emit LiquidityRemoved(account);
         _update();
     }
 

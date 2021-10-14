@@ -8,6 +8,7 @@ import "hardhat/console.sol";
 contract SpaceCoin is ERC20 {
     event TokensBought(address indexed _account, uint256 amount);
     event OwnerAction();
+    event FundsMoved();
 
     enum Phase {
         SEED,
@@ -214,5 +215,6 @@ contract SpaceCoin is ERC20 {
         uint256 remainingSPC = balanceOf(address(this));
 
         super._transfer(address(this), address(treasuryWallet), remainingSPC);
+        emit FundsMoved();
     }
 }

@@ -49,14 +49,32 @@ const ManageLiquidity = () => {
   }, [account, lpToken]);
 
   const getInfo = useCallback(async () => {
-    if (lp && lpToken && account && spaceCoin) {
+    setIsLoading(true);
+    if (lp && lpToken && account && spaceCoin && spaceRouter) {
       await getBalance();
       await getFundsMovedOrNot();
-      setIsLoading(false);
     }
-  }, [lp, lpToken, account, spaceCoin, getBalance, getFundsMovedOrNot]);
+    setIsLoading(false);
+  }, [
+    lp,
+    lpToken,
+    account,
+    spaceCoin,
+    spaceRouter,
+    getBalance,
+    getFundsMovedOrNot,
+  ]);
 
   useEffect(getInfo, [getInfo]);
+  useEffect(() => {
+    if (lp) {
+      const liquidityAdded = lp.filters.LiquidityAdded(account);
+      const liquidityRemoved = lp.filters.LiquidityRemoved(account);
+
+      lp.on(liquidityAdded, getInfo);
+      lp.on(liquidityRemoved, getInfo);
+    }
+  }, [account, getInfo, lp]);
 
   if (areFundsMoved === false) {
     return "Funds haven't been moved to LP yet!";
